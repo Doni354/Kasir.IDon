@@ -39,11 +39,10 @@
                         <th scope="col">#</th>
                         <th scope="col">Tanggal</th>
                         <th scope="col">Invoice</th>
-                        <th scope="col">Pelanggan</th>
                         <th scope="col">Total Harga</th>
                         <th scope="col">Total Bayar</th>
                         <th scope="col">Kasir</th>
-                        <th scope="col">*Set</th>
+                        <th scope="col">Opsi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -52,7 +51,6 @@
                             <td >{{ $loop->iteration }}</td>
                             <td>{{ $item->tgl }}</td>
                             <td>{{ $item->kode_penjualan }}</td>
-                            <td>{{ optional($item->pelanggan)->nama }}</td>
                             <td>Rp. {{ number_format($item->total_harga) }}</td>
                             <td>Rp. {{ number_format($item->bayar) }}</td>
                             <td>{{ $item->user->name }}</td>
