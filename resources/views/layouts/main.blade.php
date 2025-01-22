@@ -37,7 +37,7 @@
         <div class="sidebar pe-4 pb-3">
             <nav class="navbar bg-light navbar-light">
                 <a href="index.html" class="navbar-brand mx-4 mb-3">
-                    <h3 class="text-primary"><i class="fa fa-hashtag me-2"></i>Web_Kasir</h3>
+                    <h3 class="text-primary"><i class="fa fa-hashtag me-2"></i>Kasir.Doni</h3>
                 </a>
                 <div class="d-flex align-items-center ms-4 mb-4">
                     <div class="position-relative">
@@ -59,6 +59,7 @@
                         <a href="/pelanggan" class="nav-item nav-link"><i class="fa fa-male me-2"></i>Pelanggan</a>
                         <a href="/penjualan" class="nav-item nav-link"><i class="fa fa-calculator me-2"></i>Penjualan</a>
                     @endif
+
                 </div>
             </nav>
         </div>

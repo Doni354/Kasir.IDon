@@ -21,7 +21,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             @endif
-            
+
             @if(auth()->user()->role == 'admin')
             <div class="d-flex justify-content-end mb-3">
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal"><i class="fa fa-plus"></i> Produk Baru</button>
@@ -67,7 +67,7 @@
                         <th scope="col">Kode Produk</th>
                         <th scope="col">Harga</th>
                         <th scope="col">Stok</th>
-                        @if(auth()->user()->role == 'admin')
+                        @if(auth()->user()->role == 'admin' || auth()->user()->role == 'petugas')
                             <th scope="col">*Set</th>
                         @endif
                     </tr>
@@ -81,14 +81,14 @@
                             <td>Rp. {{ number_format($item->harga) }}</td>
                             <td>
                                 @if($item->stok <= 5 && $item->stok > 0)
-                                    {{ $item->stok }} 
-                                    <span class="text-sm text-danger"> *</span><i>Stok Menipis</i> 
+                                    {{ $item->stok }}
+                                    <span class="text-sm text-danger"> *</span><i>Stok Menipis</i>
                                 @elseif($item->stok == 0)
-                                    <span class="text-sm text-danger"> *</span><i>Stok Habis</i> 
+                                    <span class="text-sm text-danger"> *</span><i>Stok Habis</i>
                                 @else {{ $item->stok }}
                                 @endif
                             </td>
-                            @if(auth()->user()->role == 'admin')
+                            @if(auth()->user()->role == 'admin' || auth()->user()->role == 'petugas')
                             <td>
                                 <a class="btn btn-success btn-sm" href="/edit-produk={{ $item->id }}"><i class="fa fa-edit"></i> Edit</a>
                                 <a class="btn btn-danger btn-sm" onclick="return confirm('Apakah anda yakin ingin menghapus item ini?')" href="/hapus-produk/{{ $item->id }}"><i class="fa fa-trash"></i> Hapus</a>

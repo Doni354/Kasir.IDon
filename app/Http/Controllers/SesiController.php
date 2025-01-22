@@ -24,14 +24,12 @@ class SesiController extends Controller
             'password' => $request->password
         ];
 
-        if(Auth::attempt($ceklogin)){
-            if(auth()->user()->role == 'admin'){
-                return redirect('/home');
-            }elseif(auth()->user()->role == 'kasir'){
+        if (Auth::attempt($ceklogin)) {
+            if (in_array(auth()->user()->role, ['admin', 'kasir', 'petugas'])) {
                 return redirect('/home');
             }
-        }else{
-            return back()->with('msg','username dan password tidak sesuai');
+        } else {
+            return back()->with('msg', 'Username dan password tidak sesuai');
         }
     }
 

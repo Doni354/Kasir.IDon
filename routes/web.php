@@ -56,6 +56,14 @@ Route::middleware(['auth', 'onlyAdmin'])->group(function(){
     Route::post('/cari', [LaporanController::class, 'search']);
     Route::get('/detail={penjualan:kode_penjualan}', [LaporanController::class, 'show']);
 });
+
+Route::middleware(['auth', 'onlyPetugas'])->group(function(){
+    Route::post('/tambah-produk', [ProdukController::class, 'insert']);
+    Route::get('/edit-produk={produk:id}', [ProdukController::class, 'edit']);
+    Route::put('/edit-produk/{produk:id}', [ProdukController::class, 'update']);
+    Route::get('/hapus-produk/{produk:id}', [ProdukController::class, 'delete']);
+});
+
 Route::middleware(['auth', 'onlyKasir'])->group(function(){
     Route::get('/pelanggan', [PelangganController::class, 'index']);
     Route::get('/tambah-pelanggan', [PelangganController::class, 'tambah']);
