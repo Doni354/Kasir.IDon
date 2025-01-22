@@ -30,7 +30,6 @@
                         <i class="fa fa-plus"></i> Mulai Penjualan
                     </button>
                 </form>
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal"><i class="fa fa-plus"></i> Pilih Pelanggan</button>
             </div>
 
             <table class="table">
