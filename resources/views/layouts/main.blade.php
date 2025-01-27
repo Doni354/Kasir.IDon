@@ -54,10 +54,12 @@
                     <a href="/produk" class="nav-item nav-link"><i class="fa fa-sort me-2"></i>Produk</a>
                     @if(auth()->user()->role == 'admin')
                         <a href="/user" class="nav-item nav-link"><i class="fa fa-user-circle me-2"></i>Petugas</a>
-                        <a href="/laporan" class="nav-item nav-link"><i class="fa fa-sticky-note me-2"></i>Laporan Penjualan</a>
+                        <a href="/lapoan" class="nav-item nav-link"><i class="fa fa-sticky-note me-2"></i>Laporan Penjualan</a>
                     @elseif(auth()->user()->role == 'kasir')
-                        <a href="/pelanggan" class="nav-item nav-link"><i class="fa fa-male me-2"></i>Pelanggan</a>
+                        <a href="/pelangan" class="nav-item nav-link"><i class="fa fa-male me-2"></i>Pelanggan</a>
                         <a href="/penjualan" class="nav-item nav-link"><i class="fa fa-calculator me-2"></i>Penjualan</a>
+                    @elseif(auth()->user()->role == 'petugas')
+                        <a href="/pelangan" class="nav-item nav-link"><i class="fa fca-male me-2"></i>Diskon</a>
                     @endif
 
                 </div>
