@@ -25,11 +25,11 @@ class SesiController extends Controller
         ];
 
         if (Auth::attempt($ceklogin)) {
-            if (in_array(auth()->user()->role, ['admin', 'kasir', 'petugas'])) {
+           if (in_array(auth( )->user()->role, ['admin', 'kasir', 'petugas'])) {
                 return redirect('/home');
             }
         } else {
-            return back()->with('msg', 'Username dan password tidak sesuai');
+            return back()->with('msg', 'Email and password do not match');
         }
     }
 
