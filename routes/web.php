@@ -9,6 +9,18 @@ use App\Http\Controllers\SesiController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\LogController;
+use Illuminate\Http\Request;
+use App\Models\User;
+
+Route::get('/check-username', function (Request $request) {
+    $exists = User::where('name', $request->name)->exists();
+    return response()->json(['exists' => $exists]);
+});
+
+Route::get('/check-email', function (Request $request) {
+    $exists = User::where('email', $request->email)->exists();
+    return response()->json(['exists' => $exists]);
+});
 
 /*
 |--------------------------------------------------------------------------
