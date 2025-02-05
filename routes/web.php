@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SesiController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\LogController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,6 +25,10 @@ use App\Http\Controllers\UserController;
 //     return view('welcome');
 // });
 
+Route::get('/welcome', function (){
+    return view('welcome');
+});
+
 Route::middleware(['guest'])->group(function(){
     Route::get('/', [SesiController::class, 'index'])->name('login');
     Route::post('/login', [SesiController::class, 'login']);
@@ -39,7 +44,10 @@ Route::middleware(['auth'])->group(function(){
 
     Route::get('/produk', [ProdukController::class, 'index']);
 });
+
+
 Route::middleware(['auth', 'onlyAdmin'])->group(function(){
+    Route::get('/logs', [LogController::class, 'index'])->name('logs.index');
     Route::post('/tambah-produk', [ProdukController::class, 'insert']);
     Route::get('/edit-produk={produk:id}', [ProdukController::class, 'edit']);
     Route::put('/edit-produk/{produk:id}', [ProdukController::class, 'update']);
