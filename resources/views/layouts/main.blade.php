@@ -78,10 +78,22 @@
 
             <li class="nav-item">
                 <a class="nav-link" href="/produk">
-                    <i class="fas fa-boxes"></i>
+                    <i class="fas fa-box"></i>
                     <span>Product</span></a>
             </li>
+            @if(auth()->user()->role === 'admin')
+            <li class="nav-item">
+                <a class="nav-link" href="/produk">
+                    <i class="fas fa-boxes"></i>
+                    <span>Items</span></a>
+            </li>
 
+            <li class="nav-item">
+                <a class="nav-link" href="/produk">
+                    <i class="fas fa-shapes"></i>
+                    <span>Category</span></a>
+            </li>
+            @endif
             @if(auth()->user()->role === 'kasir')
 
 
