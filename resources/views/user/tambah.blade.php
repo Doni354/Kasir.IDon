@@ -29,22 +29,33 @@
                 </div>
 
                 <!-- Password -->
-                <div class="mb-3">
-                    <label for="password" class="form-label">Password</label>
-                    <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" id="password">
-                    <small class="form-text text-muted">Minimal 8 karakter, 1 huruf besar, 1 huruf kecil, dan 1 angka.</small>
-                    @error('password') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                    <div id="passwordFeedback" class="valid-feedback d-none">Password memenuhi syarat!</div>
-                </div>
+<div class="mb-3">
+    <label for="password" class="form-label">Password</label>
+    <div class="input-group">
+        <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" id="password">
+        <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+            <i class="fa fa-eye"></i>
+        </button>
+    </div>
+    <small class="form-text text-muted">Minimal 8 karakter, 1 huruf besar, 1 huruf kecil, dan 1 angka.</small>
+    @error('password') <div class="invalid-feedback">{{ $message }}</div> @enderror
+    <div id="passwordFeedback" class="valid-feedback d-none">Password memenuhi syarat!</div>
+</div>
 
-                <!-- Konfirmasi Password -->
-                <div class="mb-3">
-                    <label for="password_confirmation" class="form-label">Konfirmasi Password</label>
-                    <input type="password" name="password_confirmation" class="form-control @error('password_confirmation') is-invalid @enderror" id="password_confirmation">
-                    @error('password_confirmation') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                    <div id="confirmPasswordFeedback" class="valid-feedback d-none">Password cocok!</div>
-                    <div id="confirmPasswordError" class="invalid-feedback d-none">Password tidak cocok!</div>
-                </div>
+<!-- Konfirmasi Password -->
+<div class="mb-3">
+    <label for="password_confirmation" class="form-label">Konfirmasi Password</label>
+    <div class="input-group">
+        <input type="password" name="password_confirmation" class="form-control @error('password_confirmation') is-invalid @enderror" id="password_confirmation">
+        <button class="btn btn-outline-secondary" type="button" id="toggleConfirmPassword">
+            <i class="fa fa-eye"></i>
+        </button>
+    </div>
+    @error('password_confirmation') <div class="invalid-feedback">{{ $message }}</div> @enderror
+    <div id="confirmPasswordFeedback" class="valid-feedback d-none">Password cocok!</div>
+    <div id="confirmPasswordError" class="invalid-feedback d-none">Password tidak cocok!</div>
+</div>
+
 
                 <!-- Role (Select) -->
                 <div class="form-floating mb-4">
@@ -62,6 +73,74 @@
         </div>
     </div>
 </div>
+<script>
+    function togglePassword(inputId, buttonId) {
+        document.getElementById(buttonId).addEventListener('click', function () {
+            let passwordField = document.getElementById(inputId);
+            let icon = this.querySelector('i');
+
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordField.type = "password";
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+    }
+
+    togglePassword('password', 'togglePassword');
+    togglePassword('password_confirmation', 'toggleConfirmPassword');
+    togglePassword('editPassword', 'toggleEditPassword');
+    togglePassword('editPassword_confirmation', 'toggleEditConfirmPassword');
+
+    function validatePassword(inputId, feedbackId) {
+        document.getElementById(inputId).addEventListener('input', function () {
+            let password = this.value;
+            let feedback = document.getElementById(feedbackId);
+            let regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+
+            if (regex.test(password)) {
+                this.classList.remove("is-invalid");
+                this.classList.add("is-valid");
+                feedback.classList.remove("d-none");
+            } else {
+                this.classList.remove("is-valid");
+                this.classList.add("is-invalid");
+                feedback.classList.add("d-none");
+            }
+        });
+    }
+
+    validatePassword('password', 'passwordFeedback');
+    validatePassword('editPassword', 'editPasswordFeedback');
+
+    function validateConfirmPassword(passwordId, confirmId, feedbackId, errorId) {
+        document.getElementById(confirmId).addEventListener('input', function () {
+            let password = document.getElementById(passwordId).value;
+            let confirmPassword = this.value;
+            let feedback = document.getElementById(feedbackId);
+            let error = document.getElementById(errorId);
+
+            if (password === confirmPassword && confirmPassword.length > 0) {
+                this.classList.remove("is-invalid");
+                this.classList.add("is-valid");
+                feedback.classList.remove("d-none");
+                error.classList.add("d-none");
+            } else {
+                this.classList.remove("is-valid");
+                this.classList.add("is-invalid");
+                feedback.classList.add("d-none");
+                error.classList.remove("d-none");
+            }
+        });
+    }
+
+    validateConfirmPassword('password', 'password_confirmation', 'confirmPasswordFeedback', 'confirmPasswordError');
+    validateConfirmPassword('editPassword', 'editPassword_confirmation', 'editConfirmPasswordFeedback', 'editConfirmPasswordError');
+</script>
 
 <!-- JavaScript Validation -->
 <script>
