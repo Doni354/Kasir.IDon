@@ -11,6 +11,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\LogController;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Category;
+use App\Http\Controllers\CategoryController;
 
 Route::get('/check-username', function (Request $request) {
     $exists = User::where('name', $request->name)->exists();
@@ -19,6 +21,11 @@ Route::get('/check-username', function (Request $request) {
 
 Route::get('/check-email', function (Request $request) {
     $exists = User::where('email', $request->email)->exists();
+    return response()->json(['exists' => $exists]);
+});
+
+Route::get('/check-category', function (Request $request) {
+    $exists = Category::where('name', $request->name)->exists();
     return response()->json(['exists' => $exists]);
 });
 
@@ -75,6 +82,14 @@ Route::middleware(['auth', 'onlyAdmin'])->group(function(){
     Route::get('/laporan', [LaporanController::class, 'index']);
     Route::post('/cari', [LaporanController::class, 'search']);
     Route::get('/detail={penjualan:kode_penjualan}', [LaporanController::class, 'show']);
+
+    Route::get('/category', [CategoryController::class, 'index']);
+    Route::get('/tambah-category', [CategoryController::class, 'tambah']);
+    Route::post('/tambah-category', [CategoryController::class, 'insert']);
+    Route::get('/edit-category={category:id}', [CategoryController::class, 'edit']);
+    Route::put('/edit-category/{category:id}', [CategoryController::class, 'update']);
+    Route::get('/hapus-category/{category:id}', [CategoryController::class, 'delete']);
+
 });
 
 Route::middleware(['auth', 'onlyPetugas'])->group(function(){

@@ -89,7 +89,7 @@
             </li>
 
             <li class="nav-item">
-                <a class="nav-link" href="/produk">
+                <a class="nav-link" href="/category">
                     <i class="fas fa-shapes"></i>
                     <span>Category</span></a>
             </li>
@@ -293,8 +293,7 @@
     <script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
     <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
 
-    <!-- Template Javascript -->
-    <script src="js/main.js"></script>
+
     @yield('scripts')
 </body>
 

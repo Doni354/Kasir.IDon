@@ -74,189 +74,192 @@
         </div>
     </div>
 </div>
-<script>
-    function togglePassword(inputId, buttonId) {
-        document.getElementById(buttonId).addEventListener('click', function () {
-            let passwordField = document.getElementById(inputId);
-            let icon = this.querySelector('i');
+    <!-- Template Javascript -->
+    <script src="js/main.js"></script>
+    <script>
+        function togglePassword(inputId, buttonId) {
+            document.getElementById(buttonId).addEventListener('click', function () {
+                let passwordField = document.getElementById(inputId);
+                let icon = this.querySelector('i');
 
-            if (passwordField.type === "password") {
-                passwordField.type = "text";
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
-            } else {
-                passwordField.type = "password";
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
-            }
-        });
-    }
-
-    togglePassword('password', 'togglePassword');
-    togglePassword('password_confirmation', 'toggleConfirmPassword');
-    togglePassword('editPassword', 'toggleEditPassword');
-    togglePassword('editPassword_confirmation', 'toggleEditConfirmPassword');
-
-    function validatePassword(inputId, feedbackId) {
-        document.getElementById(inputId).addEventListener('input', function () {
-            let password = this.value;
-            let feedback = document.getElementById(feedbackId);
-            let regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
-
-            if (regex.test(password)) {
-                this.classList.remove("is-invalid");
-                this.classList.add("is-valid");
-                feedback.classList.remove("d-none");
-            } else {
-                this.classList.remove("is-valid");
-                this.classList.add("is-invalid");
-                feedback.classList.add("d-none");
-            }
-        });
-    }
-
-    validatePassword('password', 'passwordFeedback');
-    validatePassword('editPassword', 'editPasswordFeedback');
-
-    function validateConfirmPassword(passwordId, confirmId, feedbackId, errorId) {
-        document.getElementById(confirmId).addEventListener('input', function () {
-            let password = document.getElementById(passwordId).value;
-            let confirmPassword = this.value;
-            let feedback = document.getElementById(feedbackId);
-            let error = document.getElementById(errorId);
-
-            if (password === confirmPassword && confirmPassword.length > 0) {
-                this.classList.remove("is-invalid");
-                this.classList.add("is-valid");
-                feedback.classList.remove("d-none");
-                error.classList.add("d-none");
-            } else {
-                this.classList.remove("is-valid");
-                this.classList.add("is-invalid");
-                feedback.classList.add("d-none");
-                error.classList.remove("d-none");
-            }
-        });
-    }
-
-    validateConfirmPassword('password', 'password_confirmation', 'confirmPasswordFeedback', 'confirmPasswordError');
-    validateConfirmPassword('editPassword', 'editPassword_confirmation', 'editConfirmPasswordFeedback', 'editConfirmPasswordError');
-</script>
-
-<!-- JavaScript Validation -->
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    const nameInput = document.getElementById("name");
-    const emailInput = document.getElementById("email");
-    const passwordInput = document.getElementById("password");
-    const confirmPasswordInput = document.getElementById("password_confirmation");
-
-    // Feedback divs
-    const nameFeedback = document.getElementById("nameFeedback");
-    const nameErrorFeedback = document.getElementById("nameErrorFeedback");
-    const emailFeedback = document.getElementById("emailFeedback");
-    const emailErrorFeedback = document.getElementById("emailErrorFeedback");
-    const emailFormatError = document.getElementById("emailFormatError");
-    const passwordFeedback = document.getElementById("passwordFeedback");
-    const confirmPasswordFeedback = document.getElementById("confirmPasswordFeedback");
-    const confirmPasswordError = document.getElementById("confirmPasswordError");
-
-    // Validasi Nama (cek unik di database)
-    nameInput.addEventListener("input", function () {
-        fetch(`/check-username?name=${nameInput.value}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.exists) {
-                    nameInput.classList.add("is-invalid");
-                    nameInput.classList.remove("is-valid");
-                    nameFeedback.classList.add("d-none");
-                    nameErrorFeedback.classList.remove("d-none");
+                if (passwordField.type === "password") {
+                    passwordField.type = "text";
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
                 } else {
-                    nameInput.classList.remove("is-invalid");
-                    nameInput.classList.add("is-valid");
-                    nameFeedback.classList.remove("d-none");
-                    nameErrorFeedback.classList.add("d-none");
+                    passwordField.type = "password";
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
                 }
             });
-    });
-
-    // Validasi Email (format + unik di database)
-    emailInput.addEventListener("input", function () {
-        const emailValue = emailInput.value;
-        if (!emailValue.includes("@")) {
-            emailInput.classList.add("is-invalid");
-            emailFormatError.classList.remove("d-none");
-            return;
-        } else {
-            emailFormatError.classList.add("d-none");
         }
 
-        fetch(`/check-email?email=${emailValue}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.exists) {
-                    emailInput.classList.add("is-invalid");
-                    emailInput.classList.remove("is-valid");
-                    emailFeedback.classList.add("d-none");
-                    emailErrorFeedback.classList.remove("d-none");
+        togglePassword('password', 'togglePassword');
+        togglePassword('password_confirmation', 'toggleConfirmPassword');
+        togglePassword('editPassword', 'toggleEditPassword');
+        togglePassword('editPassword_confirmation', 'toggleEditConfirmPassword');
+
+        function validatePassword(inputId, feedbackId) {
+            document.getElementById(inputId).addEventListener('input', function () {
+                let password = this.value;
+                let feedback = document.getElementById(feedbackId);
+                let regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+
+                if (regex.test(password)) {
+                    this.classList.remove("is-invalid");
+                    this.classList.add("is-valid");
+                    feedback.classList.remove("d-none");
                 } else {
-                    emailInput.classList.remove("is-invalid");
-                    emailInput.classList.add("is-valid");
-                    emailFeedback.classList.remove("d-none");
-                    emailErrorFeedback.classList.add("d-none");
+                    this.classList.remove("is-valid");
+                    this.classList.add("is-invalid");
+                    feedback.classList.add("d-none");
                 }
             });
-    });
-
-    // Validasi Password
-    passwordInput.addEventListener("input", function () {
-        const password = passwordInput.value;
-        const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
-
-        if (passwordPattern.test(password)) {
-            passwordInput.classList.remove("is-invalid");
-            passwordInput.classList.add("is-valid");
-            passwordFeedback.classList.remove("d-none");
-        } else {
-            passwordInput.classList.remove("is-valid");
-            passwordInput.classList.add("is-invalid");
-            passwordFeedback.classList.add("d-none");
         }
-    });
 
-    // Validasi Konfirmasi Password
-    confirmPasswordInput.addEventListener("input", function () {
-        if (confirmPasswordInput.value === passwordInput.value && confirmPasswordInput.value !== "") {
-            confirmPasswordInput.classList.remove("is-invalid");
-            confirmPasswordInput.classList.add("is-valid");
-            confirmPasswordFeedback.classList.remove("d-none");
-            confirmPasswordError.classList.add("d-none");
-        } else {
-            confirmPasswordInput.classList.remove("is-valid");
-            confirmPasswordInput.classList.add("is-invalid");
-            confirmPasswordFeedback.classList.add("d-none");
-            confirmPasswordError.classList.remove("d-none");
+        validatePassword('password', 'passwordFeedback');
+        validatePassword('editPassword', 'editPasswordFeedback');
+
+        function validateConfirmPassword(passwordId, confirmId, feedbackId, errorId) {
+            document.getElementById(confirmId).addEventListener('input', function () {
+                let password = document.getElementById(passwordId).value;
+                let confirmPassword = this.value;
+                let feedback = document.getElementById(feedbackId);
+                let error = document.getElementById(errorId);
+
+                if (password === confirmPassword && confirmPassword.length > 0) {
+                    this.classList.remove("is-invalid");
+                    this.classList.add("is-valid");
+                    feedback.classList.remove("d-none");
+                    error.classList.add("d-none");
+                } else {
+                    this.classList.remove("is-valid");
+                    this.classList.add("is-invalid");
+                    feedback.classList.add("d-none");
+                    error.classList.remove("d-none");
+                }
+            });
         }
+
+        validateConfirmPassword('password', 'password_confirmation', 'confirmPasswordFeedback', 'confirmPasswordError');
+        validateConfirmPassword('editPassword', 'editPassword_confirmation', 'editConfirmPasswordFeedback', 'editConfirmPasswordError');
+    </script>
+
+    <!-- JavaScript Validation -->
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const nameInput = document.getElementById("name");
+        const emailInput = document.getElementById("email");
+        const passwordInput = document.getElementById("password");
+        const confirmPasswordInput = document.getElementById("password_confirmation");
+
+        // Feedback divs
+        const nameFeedback = document.getElementById("nameFeedback");
+        const nameErrorFeedback = document.getElementById("nameErrorFeedback");
+        const emailFeedback = document.getElementById("emailFeedback");
+        const emailErrorFeedback = document.getElementById("emailErrorFeedback");
+        const emailFormatError = document.getElementById("emailFormatError");
+        const passwordFeedback = document.getElementById("passwordFeedback");
+        const confirmPasswordFeedback = document.getElementById("confirmPasswordFeedback");
+        const confirmPasswordError = document.getElementById("confirmPasswordError");
+
+        // Validasi Nama (cek unik di database)
+        nameInput.addEventListener("input", function () {
+            fetch(`/check-username?name=${nameInput.value}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.exists) {
+                        nameInput.classList.add("is-invalid");
+                        nameInput.classList.remove("is-valid");
+                        nameFeedback.classList.add("d-none");
+                        nameErrorFeedback.classList.remove("d-none");
+                    } else {
+                        nameInput.classList.remove("is-invalid");
+                        nameInput.classList.add("is-valid");
+                        nameFeedback.classList.remove("d-none");
+                        nameErrorFeedback.classList.add("d-none");
+                    }
+                });
+        });
+
+
+        // Validasi Email (format + unik di database)
+        emailInput.addEventListener("input", function () {
+            const emailValue = emailInput.value;
+            if (!emailValue.includes("@")) {
+                emailInput.classList.add("is-invalid");
+                emailFormatError.classList.remove("d-none");
+                return;
+            } else {
+                emailFormatError.classList.add("d-none");
+            }
+
+            fetch(`/check-email?email=${emailValue}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.exists) {
+                        emailInput.classList.add("is-invalid");
+                        emailInput.classList.remove("is-valid");
+                        emailFeedback.classList.add("d-none");
+                        emailErrorFeedback.classList.remove("d-none");
+                    } else {
+                        emailInput.classList.remove("is-invalid");
+                        emailInput.classList.add("is-valid");
+                        emailFeedback.classList.remove("d-none");
+                        emailErrorFeedback.classList.add("d-none");
+                    }
+                });
+        });
+
+        // Validasi Password
+        passwordInput.addEventListener("input", function () {
+            const password = passwordInput.value;
+            const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+
+            if (passwordPattern.test(password)) {
+                passwordInput.classList.remove("is-invalid");
+                passwordInput.classList.add("is-valid");
+                passwordFeedback.classList.remove("d-none");
+            } else {
+                passwordInput.classList.remove("is-valid");
+                passwordInput.classList.add("is-invalid");
+                passwordFeedback.classList.add("d-none");
+            }
+        });
+
+        // Validasi Konfirmasi Password
+        confirmPasswordInput.addEventListener("input", function () {
+            if (confirmPasswordInput.value === passwordInput.value && confirmPasswordInput.value !== "") {
+                confirmPasswordInput.classList.remove("is-invalid");
+                confirmPasswordInput.classList.add("is-valid");
+                confirmPasswordFeedback.classList.remove("d-none");
+                confirmPasswordError.classList.add("d-none");
+            } else {
+                confirmPasswordInput.classList.remove("is-valid");
+                confirmPasswordInput.classList.add("is-invalid");
+                confirmPasswordFeedback.classList.add("d-none");
+                confirmPasswordError.classList.remove("d-none");
+            }
+        });
     });
-});
-</script>
-<!-- Custom CSS -->
-<style>
-    .form-select {
-        padding: 0.6rem;
-        border-radius: 8px;
-        border: 1px solid #ccc;
-        font-size: 1rem;
-    }
+    </script>
+    <!-- Custom CSS -->
+    <style>
+        .form-select {
+            padding: 0.6rem;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+        }
 
-    .form-select:focus {
-        border-color: #007bff;
-        box-shadow: 0px 0px 8px rgba(0, 123, 255, 0.5);
-    }
+        .form-select:focus {
+            border-color: #007bff;
+            box-shadow: 0px 0px 8px rgba(0, 123, 255, 0.5);
+        }
 
-    .form-floating select {
-        background-color: #fff;
-        font-size: 1rem;
-    }
-</style>
+        .form-floating select {
+            background-color: #fff;
+            font-size: 1rem;
+        }
+    </style>
 @endsection
