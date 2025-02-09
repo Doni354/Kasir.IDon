@@ -8,18 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Produk extends Model
 {
     use HasFactory;
-    protected $guarded = ['id'];
 
-    public function detailPenjualan(){
-        return $this->hasMany(detailPenjualan::class);
-    }
+    protected $table = 'products';
+    protected $fillable = ['name', 'price', 'category_id'];
 
-    public static function boot(){
-        parent::boot();
-        self::creating(function($produk){
-            $latestKdProduk = self::latest('kode_produk')->firstOrNew([]);
-            $currentNumber = (int) substr($latestKdProduk->kode_produk, 2);
-            $produk->kode_produk = 'PR' . str_pad(++$currentNumber, 4 , '0', STR_PAD_LEFT);
-        });
+    // Relasi ke kategori
+    public function kategori()
+    {
+        return $this->belongsTo(Category::class, 'category_id');
     }
 }

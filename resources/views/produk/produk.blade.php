@@ -33,7 +33,7 @@
                   <div class="modal-content">
                     <div class="modal-header">
                       <h5 class="modal-title" id="exampleModalLabel">Tambah Produk</h5>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close">X</button>
                     </div>
                     <div class="modal-body">
                       <form action="/tambah-produk" method="POST">
@@ -62,24 +62,26 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Nama Produk</th>
-                        <th scope="col">Kode Produk</th>
-                        <th scope="col">Harga</th>
-                        <th scope="col">Stok</th>
+                        <th>No</th>
+                        <th>Nama</th>
+                        <th>Harga</th>
+                        <th>Kategori</th>
+
                         @if(auth()->user()->role == 'admin' || auth()->user()->role == 'petugas')
-                            <th scope="col">*Set</th>
+                            <th scope="col">Aksi</th>
                         @endif
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($produk as $item)
+
                         <tr>
-                            <td >{{ $loop->iteration }}</td>
-                            <td>{{ $item->nama }}</td>
-                            <td>{{ $item->kode_produk }}</td>
-                            <td>Rp. {{ number_format($item->harga) }}</td>
-                            <td>
+                    @foreach($produk as $p)
+                        <td >{{ $loop->iteration }}</td>
+                        <td>{{ $p->name }}</td>
+                        <td>Rp{{ number_format($p->price, 0, ',', '.') }}</td>
+                        <td>{{ $p->kategori->name ?? '-' }}</td>
+
+                            {{-- <td>
                                 @if($item->stok <= 5 && $item->stok > 0)
                                     {{ $item->stok }}
                                     <span class="text-sm text-danger"> *</span><i>Stok Menipis</i>
@@ -87,11 +89,11 @@
                                     <span class="text-sm text-danger"> *</span><i>Stok Habis</i>
                                 @else {{ $item->stok }}
                                 @endif
-                            </td>
+                            </td> --}}
                             @if(auth()->user()->role == 'admin' || auth()->user()->role == 'petugas')
                             <td>
-                                <a class="btn btn-success btn-sm" href="/edit-produk={{ $item->id }}"><i class="fa fa-edit"></i> Edit</a>
-                                <a class="btn btn-danger btn-sm" onclick="return confirm('Apakah anda yakin ingin menghapus item ini?')" href="/hapus-produk/{{ $item->id }}"><i class="fa fa-trash"></i> Hapus</a>
+                                <a href="{{ url('/edit-produk='.$p->id) }}" class="btn btn-warning">Edit</a>
+                                <a href="{{ url('/hapus-produk/'.$p->id) }}" class="btn btn-danger" onclick="return confirm('Yakin ingin menghapus?')">Hapus</a>
                             </td>
                             @endif
                         </tr>
