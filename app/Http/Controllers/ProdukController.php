@@ -84,10 +84,24 @@ class ProdukController extends Controller
 
         return redirect('/produk')->with('msg', 'Produk berhasil diperbarui.');
     }
+    public function destroy($id)
+{
+    $produk = Produk::findOrFail($id);
 
-    public function delete(Produk $produk)
-    {
-        $produk->delete();
-        return back()->with('msg', 'Produk Berhasil dihapus');
-    }
+    // Simpan log sebelum menghapus
+    Logs::create([
+        'user_id' => Auth::id(),
+        'action' => 'delete_product',
+        'model' => 'Produk',
+        'msg' => 'Produk ' . $produk->name . ' telah dihapus.',
+    ]);
+
+    // Hapus produk
+    $produk->delete();
+
+    return redirect('/produk')->with('msg', value: 'Produk berhasil dihapus.');
+}
+
+
+
 }

@@ -42,11 +42,9 @@
                                 <a class="btn btn-success btn-sm" href="/edit-category={{ $item->id }}"><i class="fa fa-edit"></i> Edit</a>
                                     <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#logoutModal">
                                         <i class="fa fa-trash"></i> Hapus
-                                    </button>
-
-                            </td>
+                                    </button>    </td>
                         </tr>
-                @endforeach
+                                            @endforeach
 
                 </tbody>
             </table>

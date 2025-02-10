@@ -8,7 +8,7 @@
             @if(session('msg'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     {{ session('msg') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+
                 </div>
             @endif
             @if($errors->any())
@@ -18,7 +18,7 @@
                             <li>{{ $error }}</li>
                         @endforeach
                     </ul>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+
                 </div>
             @endif
 
@@ -62,14 +62,43 @@
                             @if(auth()->user()->role == 'admin' || auth()->user()->role == 'petugas')
                             <td>
                                 <a href="{{ url('/edit-produk='.$p->id) }}" class="btn btn-warning">Edit</a>
-                                <a href="{{ url('/hapus-produk/'.$p->id) }}" class="btn btn-danger" onclick="return confirm('Yakin ingin menghapus?')">Hapus</a>
+                                <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal{{ $p->id }}">
+                                    <i class="fa fa-trash"></i> Hapus
+                                </button>
                             </td>
                             @endif
                         </tr>
-                    @endforeach
+                        @endforeach
                 </tbody>
             </table>
+            @foreach($produk as $p)
+<!-- Modal Konfirmasi Hapus -->
+<div class="modal fade" id="deleteModal{{ $p->id }}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel{{ $p->id }}" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel{{ $p->id }}">Konfirmasi Hapus</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Apakah Anda yakin ingin menghapus produk <strong>{{ $p->name }}</strong>?<br>
+                Tekan tombol "Delete" untuk menghapus.
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Batal</button>
+
+                <form action="{{ route('produk.destroy', $p->id) }}" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger btn-sm">
+                        <i class="fa fa-trash"></i> Delete
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 </div>
+@endforeach
 @endsection
