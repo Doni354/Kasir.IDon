@@ -51,34 +51,38 @@ class ProdukController extends Controller
 
     }
 
-    public function insert(Request $request)
+    public function edit($id)
+    {
+        $produk = Produk::findOrFail($id);
+        $categories = Category::all(); // Ambil semua kategori
+
+        return view('produk.edit', compact('produk', 'categories'));
+    }
+
+    public function update(Request $request, $id)
     {
         $request->validate([
             'name' => 'required',
             'price' => 'required|numeric',
-            'category_id' => 'required|exists:categories,id'
+            'category_id' => 'required|exists:category,id',
         ]);
 
-        Produk::create($request->all());
-        return back()->with('msg', 'Produk Berhasil ditambahkan');
-    }
-
-    public function edit(Produk $produk)
-    {
-        $kategori = Category::all(); // Ambil kategori untuk dropdown
-        return view('produk.edit', compact('produk', 'kategori'));
-    }
-
-    public function update(Produk $produk, Request $request)
-    {
-        $request->validate([
-            'name' => 'required',
-            'price' => 'required|numeric',
-            'category_id' => 'required|exists:categories,id'
+        $produk = Produk::findOrFail($id);
+        $produk->update([
+            'name' => $request->name,
+            'price' => $request->price,
+            'category_id' => $request->category_id,
         ]);
 
-        $produk->update($request->all());
-        return redirect('/produk')->with('msg', 'Produk Berhasil diedit');
+        // Log perubahan
+        Logs::create([
+            'user_id' => Auth::id(),
+            'action' => 'update_product',
+            'model' => 'Produk',
+            'msg' => 'Produk ' . $produk->name . ' telah diperbarui.',
+        ]);
+
+        return redirect('/produk')->with('msg', 'Produk berhasil diperbarui.');
     }
 
     public function delete(Produk $produk)

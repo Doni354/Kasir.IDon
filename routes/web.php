@@ -67,14 +67,15 @@ Route::middleware(['auth'])->group(function(){
 Route::middleware(['auth', 'onlyAdmin'])->group(function () {
     Route::get('/produk-tambah', [ProdukController::class, 'create'])->name('produk.create');
     Route::post('/produk/store', [ProdukController::class, 'store'])->name('produk.store');
+    Route::get('/edit-produk={id}', [ProdukController::class, 'edit'])->name('produk.edit');
+    Route::post('/update-produk/{id}', [ProdukController::class, 'update'])->name('produk.update');
+
 });
 Route::get('/categories/search', [CategoryController::class, 'search'])->name('categories.search');
 
 Route::middleware(['auth', 'onlyAdmin'])->group(function(){
     Route::get('/logs', [LogController::class, 'index'])->name('logs.index');
-    Route::post('/tambah-produk', [ProdukController::class, 'insert']);
-    Route::get('/edit-produk={produk:id}', [ProdukController::class, 'edit']);
-    Route::put('/edit-produk/{produk:id}', [ProdukController::class, 'update']);
+
     Route::get('/hapus-produk/{produk:id}', [ProdukController::class, 'delete']);
 
     Route::get('/user', [UserController::class, 'index']);
