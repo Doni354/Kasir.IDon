@@ -15,6 +15,14 @@ class CategoryController extends Controller
         return view('category.category', compact('categories'));
 
     }
+    public function search(Request $request)
+    {
+        $search = $request->input('q');
+
+        $categories = Category::where('name', 'LIKE', "%{$search}%")->get(['id', 'name']);
+
+        return response()->json($categories);
+    }
 
     public function tambah()
     {
@@ -73,5 +81,5 @@ class CategoryController extends Controller
         ]);
     }
 
-    
+
 }

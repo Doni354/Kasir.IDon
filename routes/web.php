@@ -64,6 +64,11 @@ Route::middleware(['auth'])->group(function(){
     Route::get('/produk', [ProdukController::class, 'index']);
 });
 
+Route::middleware(['auth', 'onlyAdmin'])->group(function () {
+    Route::get('/produk-tambah', [ProdukController::class, 'create'])->name('produk.create');
+    Route::post('/produk/store', [ProdukController::class, 'store'])->name('produk.store');
+});
+Route::get('/categories/search', [CategoryController::class, 'search'])->name('categories.search');
 
 Route::middleware(['auth', 'onlyAdmin'])->group(function(){
     Route::get('/logs', [LogController::class, 'index'])->name('logs.index');
