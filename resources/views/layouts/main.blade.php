@@ -83,7 +83,7 @@
             </li>
             @if(auth()->user()->role === 'admin')
             <li class="nav-item">
-                <a class="nav-link" href="/produk">
+                <a class="nav-link" href="/stok">
                     <i class="fas fa-boxes"></i>
                     <span>Items</span></a>
             </li>

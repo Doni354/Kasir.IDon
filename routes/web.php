@@ -3,6 +3,7 @@
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\PelangganController;
 use App\Http\Controllers\PenjualanController;
+use App\Http\Controllers\StokController;
 use App\Models\Produk;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SesiController;
@@ -70,7 +71,7 @@ Route::middleware(['auth', 'onlyAdmin'])->group(function () {
     Route::get('/edit-produk={id}', [ProdukController::class, 'edit'])->name('produk.edit');
     Route::post('/update-produk/{id}', [ProdukController::class, 'update'])->name('produk.update');
     Route::delete('/hapus-produk={id}', [ProdukController::class, 'destroy'])->name('produk.destroy');
-
+    Route::get('/stok', [StokController::class, 'index']);
 
 });
 Route::get('/categories/search', [CategoryController::class, 'search'])->name('categories.search');
