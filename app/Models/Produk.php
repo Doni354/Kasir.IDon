@@ -20,7 +20,10 @@ class Produk extends Model
 
     // Relasi ke stok, menghitung total qty stok untuk produk ini
     public function totalStok()
-    {
-        return $this->hasMany(Stok::class, 'product_id', 'id')->sum('qty');
-    }
+{
+    return $this->hasMany(Stok::class, 'product_id') // Pastikan kolom yang benar
+        ->where('expired_date', '>', now()) // Hanya stok yang belum expired
+        ->sum('qty');
+}
+
 }

@@ -51,7 +51,7 @@
                             <td>{{ $p->kategori->name ?? '-' }}</td>
                             <td>
                                 @php
-                                    $totalStok = $p->totalStok();
+                                    $totalStok = $p->totalStok(); // Hitung hanya stok yang belum expired
                                 @endphp
                                 @if($totalStok <= 5 && $totalStok > 0)
                                     {{ $totalStok }}
@@ -74,6 +74,7 @@
                     @endforeach
                 </tbody>
             </table>
+
 
             @foreach($produk as $p)
             <!-- Modal Konfirmasi Hapus -->
