@@ -1,5 +1,5 @@
 @extends('layouts.main')
-
+@section('title', 'Stok')
 @section('content')
 <div class="container">
     <div class="row g-4">
