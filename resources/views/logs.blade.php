@@ -1,6 +1,3 @@
-
-
-
 @extends('layouts.main')
 @section('title', 'Logs')
 
@@ -15,7 +12,7 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>No</th>
                             <th>User</th>
                             <th>Action</th>
                             <th>Model</th>
@@ -27,21 +24,21 @@
                     <tbody>
                         @foreach($logs as $log)
                         <tr>
-                            <td>{{ $log->id }}</td>
+                            <td>{{ $loop->iteration }}</td>
                             <td>{{ $log->user->name ?? 'Unknown' }}</td>
-                            <td>@php
-                                // Tentukan warna badge berdasarkan action
-                                $badgeClass = match ($log->action) {
-                                'CREATE' => 'success',
-                                'UPDATE' => 'warning',
-                                'DELETE' => 'danger',
-                                'login', 'logout', 'register' => 'primary',
-                                'FAILED_LOGIN' => 'dark',
-                                default => 'secondary',
-                            };
-                            @endphp
-
-                            <span class="badge badge-{{ $badgeClass }}">{{ strtoupper($log->action) }}</span>
+                            <td>
+                                @php
+                                    // Tentukan warna badge berdasarkan action
+                                    $badgeClass = match ($log->action) {
+                                        'CREATE' => 'success',
+                                        'UPDATE' => 'warning',
+                                        'DELETE' => 'danger',
+                                        'login', 'logout', 'register' => 'primary',
+                                        'FAILED_LOGIN' => 'dark',
+                                        default => 'secondary',
+                                    };
+                                @endphp
+                                <span class="badge badge-{{ $badgeClass }}">{{ strtoupper($log->action) }}</span>
                             </td>
                             <td>{{ ucfirst($log->table_name) }}</td>
                             <td>{{ $log->msg }}</td>
@@ -61,19 +58,17 @@
                                     Lihat Detail
                                 </button>
                             </td>
-
-
                         </tr>
                         @endforeach
                     </tbody>
                 </table>
             </div>
-            {{ $logs->links() }}
+
         </div>
     </div>
 </div>
 
-<!-- Modal -->
+<!-- Modal Detail Log -->
 <div class="modal fade" id="logDetailModal" tabindex="-1" aria-labelledby="logDetailModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -81,20 +76,18 @@
                 <h5 class="modal-title" id="logDetailModalLabel">
                     <i class="fas fa-history"></i> Detail Log
                 </h5>
-
             </div>
             <div class="modal-body">
                 <div class="container">
                     <div class="row">
-                        <!-- Bagian Kiri -->
+                        <!-- Informasi Pengguna -->
                         <div class="col-md-6">
                             <h6 class="text-primary"><i class="fas fa-user"></i> Informasi Pengguna</h6>
                             <p><strong>User:</strong> <span id="logUser"></span></p>
                             <p><strong>IP Address:</strong> <span id="logIp"></span></p>
                             <p><strong>User Agent:</strong> <span id="logUserAgent"></span></p>
                         </div>
-
-                        <!-- Bagian Kanan -->
+                        <!-- Informasi Log -->
                         <div class="col-md-6">
                             <h6 class="text-primary"><i class="fas fa-database"></i> Informasi Log</h6>
                             <p><strong>Aksi:</strong> <span id="logAction"></span></p>
@@ -114,13 +107,12 @@
                     <hr>
 
                     <div class="row">
-                        <!-- Old Data -->
+                        <!-- Data Lama -->
                         <div class="col-md-6">
                             <h6 class="text-danger"><i class="fas fa-arrow-left"></i> Data Lama</h6>
                             <pre class="bg-light p-3 rounded border" id="logOldData"></pre>
                         </div>
-
-                        <!-- New Data -->
+                        <!-- Data Baru -->
                         <div class="col-md-6">
                             <h6 class="text-success"><i class="fas fa-arrow-right"></i> Data Baru</h6>
                             <pre class="bg-light p-3 rounded border" id="logNewData"></pre>
@@ -128,16 +120,13 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 </div>
-
-
 @endsection
 
 @section('scripts')
-<!-- DataTables -->
+<!-- DataTables CSS dan JS -->
 <link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap4.min.css" rel="stylesheet">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
@@ -145,25 +134,37 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.2/js/bootstrap.bundle.min.js"></script>
 
 <script>
-   $('.view-log').click(function () {
-    $('#logUser').text($(this).data('user'));
-    $('#logAction').text($(this).data('action'));
-    $('#logModel').text($(this).data('model'));
-    $('#logMsg').text($(this).data('msg'));
-    $('#logRecordId').text($(this).data('record-id'));
-    $('#logIp').text($(this).data('ip'));
-    $('#logUserAgent').text($(this).data('user-agent'));
-    $('#logCreated').text($(this).data('created'));
+    $(document).ready(function () {
+        // Inisialisasi DataTables pada tabel dengan id "dataTable"
+        $('#dataTable').DataTable({
+            "paging": true,
+            "ordering": true,
+            "info": true,
+            "searching": true,
+            "language": {
+                "url": "https://cdn.datatables.net/plug-ins/1.11.5/i18n/Indonesian.json"
+            }
+        });
 
-    let oldData = $(this).data('old');
-    let newData = $(this).data('new');
+        // Script untuk menampilkan detail log pada modal
+        $('.view-log').click(function () {
+            $('#logUser').text($(this).data('user'));
+            $('#logAction').text($(this).data('action'));
+            $('#logModel').text($(this).data('model'));
+            $('#logMsg').text($(this).data('msg'));
+            $('#logRecordId').text($(this).data('record-id'));
+            $('#logIp').text($(this).data('ip'));
+            $('#logUserAgent').text($(this).data('user-agent'));
+            $('#logCreated').text($(this).data('created'));
 
-    $('#logOldData').text(oldData ? JSON.stringify(oldData, null, 4) : 'Tidak ada data lama');
-    $('#logNewData').text(newData ? JSON.stringify(newData, null, 4) : 'Tidak ada data baru');
+            let oldData = $(this).data('old');
+            let newData = $(this).data('new');
 
-    $('#logDetailModal').modal('show');
-});
+            $('#logOldData').text(oldData ? JSON.stringify(oldData, null, 4) : 'Tidak ada data lama');
+            $('#logNewData').text(newData ? JSON.stringify(newData, null, 4) : 'Tidak ada data baru');
 
-
+            $('#logDetailModal').modal('show');
+        });
+    });
 </script>
 @endsection

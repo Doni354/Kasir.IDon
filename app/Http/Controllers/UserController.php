@@ -20,17 +20,14 @@ class UserController extends Controller
         return view('user.tambah');
     }
 
-    public function insert(Request $request){
+    public function insert(Request $request)
+    {
         $request->validate([
             'name' => 'required',
             'email' => 'required|unique:users',
             'password' => [
-                'required',
-                'confirmed',
-                'min:8',
-                'regex:/[A-Z]/',   // Minimal 1 huruf besar
-                'regex:/[a-z]/',   // Minimal 1 huruf kecil
-                'regex:/[0-9]/',   // Minimal 1 angka
+                'required', 'confirmed', 'min:8',
+                'regex:/[A-Z]/', 'regex:/[a-z]/', 'regex:/[0-9]/',
             ],
             'role' => 'required|in:petugas,kasir',
         ]);
@@ -41,9 +38,13 @@ class UserController extends Controller
         $user->password = Hash::make($request->password);
         $user->role = $request->role;
         $user->save();
-
-        // Catat log
-        $this->logAction(Auth::id(), 'create_user', 'User', 'User '.$user->name.' telah ditambahkan.');
+        $this->logAction(
+            Auth::id(), 'CREATE', 'users',
+            'User ' . $user->name . ' telah ditambahkan.',
+            $user->id,
+            null,
+            $user->toArray() // Konversi user ke array sebelum dikirim ke log
+        );
 
         return redirect('/user')->with('msg', 'User Berhasil ditambahkan');
     }
@@ -52,20 +53,15 @@ class UserController extends Controller
         return view('user.edit', compact('user'));
     }
 
-    public function update(User $user, Request $request){
+    public function update(User $user, Request $request)
+    {
         $request->validate([
             'name' => 'required',
             'email' => 'required',
-            'password' => [
-                'nullable',
-                'confirmed',
-                'min:8',
-                'regex:/[A-Z]/',
-                'regex:/[a-z]/',
-                'regex:/[0-9]/',
-            ],
+            'password' => ['nullable', 'confirmed', 'min:8', 'regex:/[A-Z]/', 'regex:/[a-z]/', 'regex:/[0-9]/'],
             'role' => 'required|in:petugas,kasir',
         ]);
+        $oldData = $user->toArray(); // Simpan data lama sebelum update
 
         $user->name = $request->name;
         $user->email = $request->email;
@@ -75,28 +71,56 @@ class UserController extends Controller
         $user->role = $request->role;
         $user->update();
 
-        // Catat log
-        $this->logAction(Auth::id(), 'update_user', 'User', 'User '.$user->name.' telah diperbarui.');
+        $newData = $user->toArray(); // Simpan data baru setelah update
+
+        $this->logAction(
+            Auth::id(),
+            'UPDATE',
+            'users',
+            'User ' . $user->name . ' diperbarui.',
+            $user->id,
+            $oldData, // Kirim data lama
+            $newData  // Kirim data baru
+        );
 
         return redirect('/user')->with('msg', 'User Berhasil diedit');
     }
 
-    public function delete(User $user){
-        $this->logAction(Auth::id(), 'delete_user', 'User', 'User '.$user->name.' telah dihapus.');
+
+    public function delete(User $user)
+    {
+        $oldData = $user->toArray();
+        $this->logAction(
+            Auth::id(), 'DELETE', 'users',
+            'User ' . $user->name . ' telah dihapus.',
+            $user->id,
+            $oldData,
+            null
+        );
+
         $user->delete();
+
+
         return back()->with('msg', 'User Berhasil dihapus');
     }
 
-    private function logAction($userId, $action, $model, $msg)
-    {
-        Logs::create([
-            'user_id' => $userId,
-            'action' => $action,
-            'model' => $model,
-            'msg' => $msg,
-            'created_at' => now(),
-        ]);
-    }
+
+    private function logAction($userId, $action, $model, $msg, $recordId = null, $oldData = null, $newData = null)
+{
+    Logs::create([
+        'user_id' => $userId,
+        'action' => $action,
+        'table_name' => $model,
+        'record_id' => $recordId,
+        'old_data' => $oldData ? json_encode($oldData) : null, // Convert array ke JSON string
+        'new_data' => $newData ? json_encode($newData) : null, // Convert array ke JSON string
+        'msg' => $msg,
+        'ip_address' => request()->ip(),
+        'user_agent' => request()->header('User-Agent'),
+        'created_at' => now(),
+    ]);
+}
+
     public function checkEmail(Request $request)
     {
         $exists = User::where('email', $request->email)->exists();
