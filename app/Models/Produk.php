@@ -15,6 +15,12 @@ class Produk extends Model
     // Relasi ke kategori
     public function kategori()
     {
-        return $this->belongsTo(Category::class, 'category_id');
+        return $this->belongsTo(Category::class, 'category_id', 'id');
+    }
+
+    // Relasi ke stok, menghitung total qty stok untuk produk ini
+    public function totalStok()
+    {
+        return $this->hasMany(Stok::class, 'product_id', 'id')->sum('qty');
     }
 }
