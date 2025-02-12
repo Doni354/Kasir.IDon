@@ -4,9 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Produk;
-use App\Models\logs;
+use App\Models\Logs;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+
 class ProdukController extends Controller
 {
     public function index()
@@ -15,47 +16,35 @@ class ProdukController extends Controller
         return view('produk.produk', compact('produk'));
     }
 
-// Menampilkan form tambah produk
     public function create()
     {
-        $categories = Category::all(); // Ambil semua kategori
+        $categories = Category::all();
         return view('produk.create', compact('categories'));
     }
 
-    // Menyimpan data produk baru
     public function store(Request $request)
     {
-        // Validasi input
         $request->validate([
             'name' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
             'category_id' => 'required|exists:category,id',
         ]);
 
-        // Simpan data produk baru
         $produk = Produk::create([
             'name' => $request->name,
             'price' => $request->price,
             'category_id' => $request->category_id,
         ]);
 
-        // Simpan log aksi
-        Logs::create([
-            'user_id' => Auth::id(),
-            'action' => 'create',
-            'model' => 'Produk',
-            'msg' => 'Produk ' . $produk->name . ' telah ditambahkan.',
-            'created_at' => now(),
-        ]);
-        return redirect('/produk')->with('msg', 'Produk berhasil ditambahkan.');
+        $this->logAction(Auth::id(), 'create', 'Produk', 'Produk ' . $produk->name . ' telah ditambahkan.', $produk->id, null, $produk->toArray());
 
+        return redirect('/produk')->with('msg', 'Produk berhasil ditambahkan.');
     }
 
     public function edit($id)
     {
         $produk = Produk::findOrFail($id);
-        $categories = Category::all(); // Ambil semua kategori
-
+        $categories = Category::all();
         return view('produk.edit', compact('produk', 'categories'));
     }
 
@@ -68,49 +57,51 @@ class ProdukController extends Controller
         ]);
 
         $produk = Produk::findOrFail($id);
+        $oldData = $produk->toArray();
+
         $produk->update([
             'name' => $request->name,
             'price' => $request->price,
             'category_id' => $request->category_id,
         ]);
 
-        // Log perubahan
-        Logs::create([
-            'user_id' => Auth::id(),
-            'action' => 'update_product',
-            'model' => 'Produk',
-            'msg' => 'Produk ' . $produk->name . ' telah diperbarui.',
-        ]);
+        $this->logAction(Auth::id(), 'update', 'Produk', 'Produk ' . $produk->name . ' telah diperbarui.', $produk->id, $oldData, $produk->toArray());
 
         return redirect('/produk')->with('msg', 'Produk berhasil diperbarui.');
     }
+
     public function destroy($id)
-{
-    $produk = Produk::findOrFail($id);
+    {
+        $produk = Produk::findOrFail($id);
+        $oldData = $produk->toArray();
 
-    // Simpan log sebelum menghapus
-    Logs::create([
-        'user_id' => Auth::id(),
-        'action' => 'delete_product',
-        'model' => 'Produk',
-        'msg' => 'Produk ' . $produk->name . ' telah dihapus.',
-    ]);
+        $this->logAction(Auth::id(), 'delete', 'Produk', 'Produk ' . $produk->name . ' telah dihapus.', $produk->id, $oldData, null);
 
-    // Hapus produk
-    $produk->delete();
+        $produk->delete();
 
-    return redirect('/produk')->with('msg', value: 'Produk berhasil dihapus.');
-}
+        return redirect('/produk')->with('msg', 'Produk berhasil dihapus.');
+    }
 
+    public function search(Request $request)
+    {
+        $search = $request->input('q');
+        $products = Produk::where('name', 'LIKE', "%{$search}%")->get(['id', 'name']);
+        return response()->json($products);
+    }
 
-public function search(Request $request)
-{
-    $search = $request->input('q');
-
-    // Cari produk berdasarkan nama
-    $products = Produk::where('name', 'LIKE', "%{$search}%")->get(['id', 'name']);
-
-    return response()->json($products);
-}
-
+    private function logAction($userId, $action, $model, $msg, $recordId = null, $oldData = null, $newData = null)
+    {
+        Logs::create([
+            'user_id' => $userId,
+            'action' => $action,
+            'table_name' => $model,
+            'record_id' => $recordId,
+            'old_data' => $oldData ? json_encode($oldData) : null,
+            'new_data' => $newData ? json_encode($newData) : null,
+            'msg' => $msg,
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'created_at' => now(),
+        ]);
+    }
 }

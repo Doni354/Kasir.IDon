@@ -30,9 +30,9 @@
                                 @php
                                     // Tentukan warna badge berdasarkan action
                                     $badgeClass = match ($log->action) {
-                                        'CREATE' => 'success',
-                                        'UPDATE' => 'warning',
-                                        'DELETE' => 'danger',
+                                        'CREATE', 'create' => 'success',
+                                        'UPDATE', 'update' => 'warning',
+                                        'DELETE', 'delete' => 'danger',
                                         'login', 'logout', 'register' => 'primary',
                                         'FAILED_LOGIN' => 'dark',
                                         default => 'secondary',
