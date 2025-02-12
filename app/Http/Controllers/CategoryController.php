@@ -13,14 +13,12 @@ class CategoryController extends Controller
     {
         $categories = Category::all();
         return view('category.category', compact('categories'));
-
     }
+
     public function search(Request $request)
     {
         $search = $request->input('q');
-
         $categories = Category::where('name', 'LIKE', "%{$search}%")->get(['id', 'name']);
-
         return response()->json($categories);
     }
 
@@ -39,7 +37,7 @@ class CategoryController extends Controller
         $category->name = $request->name;
         $category->save();
 
-        $this->logAction(Auth::id(), 'create_category', 'Category', 'Category ' . $category->name . ' telah ditambahkan.');
+        $this->logAction(Auth::id(), 'create', 'Category', 'Category ' . $category->name . ' telah ditambahkan.', $category->id, null, $category->toArray());
 
         return redirect('/category')->with('msg', 'Category berhasil ditambahkan.');
     }
@@ -55,31 +53,39 @@ class CategoryController extends Controller
             'name' => 'required|max:255|unique:category,name,' . $category->id,
         ]);
 
+        $oldData = $category->toArray();
+
         $category->name = $request->name;
         $category->save();
 
-        $this->logAction(Auth::id(), 'update_category', 'Category', 'Category ' . $category->name . ' telah diperbarui.');
+        $this->logAction(Auth::id(), 'update', 'Category', 'Category ' . $category->name . ' telah diperbarui.', $category->id, $oldData, $category->toArray());
 
         return redirect('/category')->with('msg', 'Category berhasil diperbarui.');
     }
 
     public function delete(Category $category)
     {
-        $this->logAction(Auth::id(), 'delete_category', 'Category', 'Category ' . $category->name . ' telah dihapus.');
+        $oldData = $category->toArray();
+
+        $this->logAction(Auth::id(), 'delete', 'Category', 'Category ' . $category->name . ' telah dihapus.', $category->id, $oldData, null);
         $category->delete();
+
         return back()->with('msg', 'Category berhasil dihapus.');
     }
 
-    private function logAction($userId, $action, $model, $msg)
+    private function logAction($userId, $action, $model, $msg, $recordId = null, $oldData = null, $newData = null)
     {
         Logs::create([
             'user_id' => $userId,
             'action' => $action,
-            'model' => $model,
+            'table_name' => $model,
+            'record_id' => $recordId,
+            'old_data' => $oldData ? json_encode($oldData) : null,
+            'new_data' => $newData ? json_encode($newData) : null,
             'msg' => $msg,
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
             'created_at' => now(),
         ]);
     }
-
-
 }
