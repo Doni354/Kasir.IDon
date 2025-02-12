@@ -51,4 +51,39 @@ class StokController extends Controller
         return redirect('/stok')->with('msg', 'Stok berhasil ditambahkan!');
 
     }
+
+    public function edit($id)
+{
+    $stok = Stok::findOrFail($id);
+    return view('stok.edit', compact('stok'));
+}
+
+public function update(Request $request, $id)
+{
+    $request->validate([
+        'product_id' => 'required',
+        'qty' => 'required|integer',
+        'expired_date' => 'required|date',
+        'buy_date' => 'required|date',
+    ]);
+
+    $stok = Stok::findOrFail($id);
+    $stok->update([
+        'product_id' => $request->product_id,
+        'qty' => $request->qty,
+        'expired_date' => $request->expired_date,
+        'buy_date' => $request->buy_date,
+    ]);
+
+    return redirect('/stok')->with('success', 'Data stok berhasil diperbarui.');
+}
+
+public function destroy($id)
+{
+    $stok = Stok::findOrFail($id);
+    $stok->delete();
+
+    return redirect('/stok')->with('success', 'Data stok berhasil dihapus.');
+}
+
 }

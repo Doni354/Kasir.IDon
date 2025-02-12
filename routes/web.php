@@ -76,6 +76,9 @@ Route::middleware(['auth', 'onlyAdmin'])->group(function () {
 
     Route::get('/stok-tambah', [StokController::class, 'create'])->name('stok.create');
     Route::post('/stok-tambah', [StokController::class, 'store'])->name('stok.store');
+    Route::get('/stok-edit={id}', [StokController::class, 'edit'])->name('stok.edit');
+    Route::put('/stok-update/{id}', [StokController::class, 'update'])->name('stok.update');
+    Route::delete('/stok-delete/{id}', [StokController::class, 'destroy'])->name('stok.destroy');
 
 });
 Route::get('/categories/search', [CategoryController::class, 'search'])->name('categories.search');

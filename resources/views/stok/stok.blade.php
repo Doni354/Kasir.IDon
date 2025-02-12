@@ -82,16 +82,48 @@
 
                         @if(auth()->user()->role == 'admin' || auth()->user()->role == 'petugas')
                             <td>
-                                <a href="#" class="btn btn-warning btn-sm">Edit</a>
-                                <a href="#" class="btn btn-danger btn-sm">Hapus</a>
+                                <!-- Tombol Edit -->
+                <a href="{{ url('/stok-edit='.$stok->id) }}" class="btn btn-warning btn-sm">Edit</a>
+
+                <!-- Tombol Hapus (Trigger Modal) -->
+                <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal{{ $stok->id }}">
+                    <i class="fa fa-trash"></i> Hapus
+                </button>
                             </td>
                         @endif
                     </tr>
                 @endforeach
             </tbody>
         </table>
+        @foreach ($stokList as $index => $stok)
+ <!-- Modal Konfirmasi Hapus -->
+ <div class="modal fade" id="deleteModal{{ $stok->id }}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel{{ $stok->id }}" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel{{ $stok->id }}">Konfirmasi Hapus</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Apakah Anda yakin ingin menghapus stok produk <strong>{{ $stok->product->name }}</strong>?<br>
+                Tekan tombol "Delete" untuk menghapus.
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Batal</button>
 
-
-
+                <form action="{{ route('stok.destroy', $stok->id) }}" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger btn-sm">
+                        <i class="fa fa-trash"></i> Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@endforeach
 </div>
 @endsection
