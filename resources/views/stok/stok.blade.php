@@ -30,71 +30,65 @@
             </div>
             @endif
 
-
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Nama</th>
-                    <th>Stok</th>
-                    <th>Expired Date</th>
-                    <th>Buy Date</th>
-
-                    @if(auth()->user()->role == 'admin' || auth()->user()->role == 'petugas')
-                        <th scope="col">Aksi</th>
-                    @endif
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($stokList as $index => $stok)
-                    @php
-                        $expiredDate = Carbon::parse($stok->expired_date);
-                        $diffDays = $today->diffInDays($expiredDate, false); // Hitung selisih hari (bisa negatif)
-
-                        if ($diffDays < 0) {
-                            $statusText = "Barang Expired";
-                            $rowClass = "bg-danger text-white"; // Warna merah untuk expired
-                        } elseif ($diffDays == 0) {
-                            $statusText = "Expired Hari Ini";
-                            $rowClass = "bg-danger text-white";
-                        } elseif ($diffDays <= 5) {
-                            $statusText = "Expired dalam $diffDays hari";
-                            $rowClass = "bg-warning text-dark"; // Warna kuning untuk hampir expired
-                        } else {
-                            $statusText = "";
-                            $rowClass = "";
-                        }
-                    @endphp
-
-                    <tr class="{{ $rowClass }}">
-                        <td>{{ $index + 1 }}</td>
-                        <td>{{ $stok->product->name ?? 'Tidak Ada' }}</td>
-                        <td>{{ $stok->qty }}</td>
-                        <td>
-                            {{ $stok->expired_date ? date('d-m-Y', strtotime($stok->expired_date)) : '-' }}
-                            @if ($statusText)
-                                <span>
-                                    {{ $statusText }}
-                                </span>
-                            @endif
-                        </td>
-                        <td>{{ $stok->buy_date ? date('d-m-Y', strtotime($stok->buy_date)) : '-' }}</td>
-
+            <table id="stokTable" class="table table-striped table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>No</th>
+                        <th>Nama</th>
+                        <th>Stok</th>
+                        <th>Expired Date</th>
+                        <th>Buy Date</th>
                         @if(auth()->user()->role == 'admin' || auth()->user()->role == 'petugas')
-                            <td>
-                                <!-- Tombol Edit -->
-                <a href="{{ url('/stok-edit='.$stok->id) }}" class="btn btn-warning btn-sm">Edit</a>
-
-                <!-- Tombol Hapus (Trigger Modal) -->
-                <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal{{ $stok->id }}">
-                    <i class="fa fa-trash"></i> Hapus
-                </button>
-                            </td>
+                            <th scope="col">Aksi</th>
                         @endif
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach ($stokList as $index => $stok)
+                        @php
+                            $expiredDate = Carbon::parse($stok->expired_date);
+                            $diffDays = $today->diffInDays($expiredDate, false);
+
+                            if ($diffDays < 0) {
+                                $statusText = "Barang Expired";
+                                $rowClass = "bg-danger text-white";
+                            } elseif ($diffDays == 0) {
+                                $statusText = "Expired Hari Ini";
+                                $rowClass = "bg-danger text-white";
+                            } elseif ($diffDays <= 5) {
+                                $statusText = "Expired dalam $diffDays hari";
+                                $rowClass = "bg-warning text-white";
+                            } else {
+                                $statusText = "";
+                                $rowClass = "text-dark";
+                            }
+                        @endphp
+                        <tr class="{{ $rowClass }}">
+                            <td>{{ $index + 1 }}</td>
+                            <td>{{ $stok->product->name ?? 'Tidak Ada' }}</td>
+                            <td>{{ $stok->qty }}</td>
+                            <td>
+                                {{ $stok->expired_date ? date('d-m-Y', strtotime($stok->expired_date)) : '-' }}
+                                @if ($statusText)
+                                    <span>({{ $statusText }})</span>
+                                @endif
+                            </td>
+                            <td>{{ $stok->buy_date ? date('d-m-Y', strtotime($stok->buy_date)) : '-' }}</td>
+                            @if(auth()->user()->role == 'admin' || auth()->user()->role == 'petugas')
+                                <td>
+                                    <a href="{{ url('/stok-edit='.$stok->id) }}" class="btn btn-warning btn-sm">Edit</a>
+                                    <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal{{ $stok->id }}">
+                                        <i class="fa fa-trash"></i> Hapus
+                                    </button>
+                                </td>
+                            @endif
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+
+
+
         @foreach ($stokList as $index => $stok)
  <!-- Modal Konfirmasi Hapus -->
  <div class="modal fade" id="deleteModal{{ $stok->id }}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel{{ $stok->id }}" aria-hidden="true">
@@ -126,4 +120,29 @@
 </div>
 @endforeach
 </div>
+@endsection
+@section('scripts')
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+            <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+
+            <script>
+
+                $(document).ready(function() {
+                    $('#stokTable').DataTable({
+                        "language": {
+                            "search": "Cari:",
+                            "lengthMenu": "Tampilkan _MENU_ entri",
+                            "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
+                            "paginate": {
+                                "first": "Pertama",
+                                "last": "Terakhir",
+                                "next": "Selanjutnya",
+                                "previous": "Sebelumnya"
+                            }
+                        }
+                    });
+                });
+            </script>
 @endsection
