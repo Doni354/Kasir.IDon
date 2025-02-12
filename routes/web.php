@@ -79,6 +79,7 @@ Route::middleware(['auth', 'onlyAdmin'])->group(function () {
 
 });
 Route::get('/categories/search', [CategoryController::class, 'search'])->name('categories.search');
+Route::get('/products/search', [ProdukController::class, 'search'])->name('products.search');
 
 Route::middleware(['auth', 'onlyAdmin'])->group(function(){
     Route::get('/logs', [LogController::class, 'index'])->name('logs.index');

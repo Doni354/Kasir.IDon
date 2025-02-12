@@ -103,5 +103,14 @@ class ProdukController extends Controller
 }
 
 
+public function search(Request $request)
+{
+    $search = $request->input('q');
+
+    // Cari produk berdasarkan nama
+    $products = Produk::where('name', 'LIKE', "%{$search}%")->get(['id', 'name']);
+
+    return response()->json($products);
+}
 
 }

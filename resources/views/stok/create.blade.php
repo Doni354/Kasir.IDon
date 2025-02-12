@@ -23,14 +23,11 @@
     <form action="{{ route('stok.store') }}" method="POST">
         @csrf
 
-        <!-- Pilihan Produk -->
+        <!-- Pilihan Produk dengan Search -->
         <div class="mb-3">
             <label for="product_id" class="form-label">Pilih Produk</label>
-            <select name="product_id" id="product_id" class="form-control" required>
-                <option value="">-- Pilih Produk --</option>
-                @foreach($products as $product)
-                    <option value="{{ $product->id }}">{{ $product->name }}</option>
-                @endforeach
+            <select name="product_id" id="product_id" class="form-control select2" required>
+                <option value="" selected disabled>Memuat data produk...</option>
             </select>
         </div>
 
@@ -58,13 +55,39 @@
     </form>
 </div>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        let today = new Date().toISOString().split('T')[0];
+@endsection
 
-        document.getElementById("expired_date").setAttribute("min", today);
-        document.getElementById("buy_date").setAttribute("min", today);
-    });
-</script>
+@section('scripts')
+    <!-- Tambahkan Select2 -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
 
+    <script>
+        $(document).ready(function() {
+            // Select2 untuk pencarian produk
+            $('#product_id').select2({
+                placeholder: "Cari dan Pilih Produk",
+                allowClear: true,
+                width: '100%',
+                ajax: {
+                    url: "{{ route('products.search') }}", // Endpoint pencarian produk
+                    dataType: 'json',
+                    delay: 250, // Mengurangi beban server
+                    processResults: function (data) {
+                        return {
+                            results: $.map(data, function (item) {
+                                return { id: item.id, text: item.name };
+                            })
+                        };
+                    },
+                    cache: true
+                }
+            });
+
+            // Batasi tanggal agar tidak bisa memilih sebelum hari ini
+            let today = new Date().toISOString().split('T')[0];
+            document.getElementById("expired_date").setAttribute("min", today);
+            document.getElementById("buy_date").setAttribute("min", today);
+        });
+    </script>
 @endsection
