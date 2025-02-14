@@ -45,10 +45,10 @@
                             <td>{{ $item->role }}</td>
                             <td>
                                 <a class="btn btn-success btn-sm" href="/edit-user={{ $item->id }}"><i class="fa fa-edit"></i> Edit</a>
-                                    <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#logoutModal">
+                                    <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#DeleteModal">
                                         <i class="fa fa-trash"></i> Hapus
                                     </button>
-                                
+
                             </td>
                         </tr>
                     @endif
@@ -61,12 +61,12 @@
 </div>
 
     <!-- Logout Modal-->
-    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    <div class="modal fade" id="DeleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Are you sure?</h5>
                     <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>

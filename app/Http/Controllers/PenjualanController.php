@@ -109,14 +109,15 @@ public function store(Request $request)
     return back()->with('msg', 'Produk Berhasil Ditambahkan ke Keranjang');
 }
 
-public function bayar(Penjualan $penjualan, Request $request){
+public function bayar(Penjualan $penjualan, Request $request)
+{
     $request->validate(['bayar' => 'required']);
 
     $bayar = $request->bayar;
     $total_harga = $request->total_harga;
     $kembalian = $bayar - $total_harga;
 
-    if($bayar < $total_harga){
+    if ($bayar < $total_harga) {
         return back()->with('msg', 'Masukan uang yang cukup');
     }
 
@@ -125,8 +126,24 @@ public function bayar(Penjualan $penjualan, Request $request){
     $penjualan->status = 'paid';
 
     if ($penjualan->member) {
+        $member = $penjualan->member;
+
+        // Tambah poin
         $poinTambahan = floor($total_harga / 1000);
-        $penjualan->member->increment('poin', $poinTambahan);
+        $member->poin += $poinTambahan;
+
+        // Tambah total belanja secara manual
+        $member->total_belanja = $member->total_belanja + $total_harga;
+
+        // Update type member jika memenuhi syarat
+        if ($member->total_belanja >= 5000000) {
+            $member->type = 3;
+        } elseif ($member->total_belanja >= 1000000) {
+            $member->type = 2;
+        }
+
+        // Simpan perubahan
+        $member->save();
     }
 
     $penjualan->update();
@@ -138,6 +155,7 @@ public function bayar(Penjualan $penjualan, Request $request){
         'kembalian' => $kembalian,
     ]);
 }
+
 
 
 

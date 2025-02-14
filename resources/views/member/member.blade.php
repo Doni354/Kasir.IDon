@@ -18,7 +18,7 @@
                 <a href="{{ route('member.create') }}" class="btn btn-primary"><i class="fa fa-plus"></i> Tambah Member</a>
             </div>
 
-            <table class="table table-bordered table-striped" id="dataTable">
+            <table class="table table-bordered table-hover" id="dataTable">
                 <thead class="table-dark">
                     <tr>
                         <th>No</th>
@@ -38,9 +38,13 @@
                         <td>
                             @php
                                 $typeLabels = ['1' => 'Bronze', '2' => 'Silver', '3' => 'Gold'];
+                                $typeColors = [
+                                    '1' => 'badge-bronze', // Bronze
+                                    '2' => 'badge-silver', // Silver
+                                    '3' => 'badge-gold'   // Gold
+                                ];
                             @endphp
-                            <span class="badge
-                                {{ $member->type == 1 ? 'bg-warning' : ($member->type == 2 ? 'bg-secondary' : 'bg-success') }}">
+                            <span class="badge {{ $typeColors[$member->type] ?? 'bg-dark text-white' }}">
                                 {{ $typeLabels[$member->type] ?? 'Unknown' }}
                             </span>
                         </td>
@@ -82,8 +86,7 @@
                                     </div>
                                     <div class="mb-3">
                                         <strong>Type:</strong>
-                                        <span class="badge
-                                            {{ $member->type == 1 ? 'bg-warning' : ($member->type == 2 ? 'bg-secondary' : 'bg-success') }}">
+                                        <span class="badge {{ $typeColors[$member->type] ?? 'bg-dark text-white' }}">
                                             {{ $typeLabels[$member->type] ?? 'Unknown' }}
                                         </span>
                                     </div>
@@ -106,6 +109,22 @@
         </div>
     </div>
 </div>
+
+<style>
+    /* Warna Kustom Badge */
+    .badge-bronze {
+        background-color: #cd7f32 !important; /* Warna Bronze */
+        color: white !important;
+    }
+    .badge-silver {
+        background-color: #c0c0c0 !important; /* Warna Silver */
+        color: black !important;
+    }
+    .badge-gold {
+        background-color: #ffd700 !important; /* Warna Gold */
+        color: black !important;
+    }
+</style>
 @endsection
 
 @section('scripts')
