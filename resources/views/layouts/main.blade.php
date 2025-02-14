@@ -98,8 +98,14 @@
             </li>
             @endif
             @if(auth()->user()->role === 'kasir')
-
-
+            <div class="sidebar-heading">
+                Manage User
+            </div>
+            <li class="nav-item">
+                <a class="nav-link" href="/member">
+                    <i class="fas fa-users"></i>
+                    <span>Membership</span></a>
+            </li>
             <!-- Divider -->
             <hr class="sidebar-divider">
             <!-- Heading -->

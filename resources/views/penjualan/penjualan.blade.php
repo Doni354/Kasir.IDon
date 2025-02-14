@@ -52,7 +52,7 @@
                             <td>{{ $item->kode_penjualan }}</td>
                             <td>Rp. {{ number_format($item->total_harga) }}</td>
                             <td>Rp. {{ number_format($item->bayar) }}</td>
-                            <td>{{ $item->user->name }}</td>
+                            
                             <td>
                                 <a class="btn btn-danger btn-sm" onclick="return confirm('Apakah anda yakin ingin menghapus penjualan ini?')" href="/hapus-penjualan/{{ $item->kode_penjualan }}"><i class="fa fa-trash"></i> Hapus</a>
                             </td>

@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Category;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\MemberController;
 
 Route::get('/check-username', function (Request $request) {
     $exists = User::where('name', $request->name)->exists();
@@ -115,6 +116,12 @@ Route::middleware(['auth', 'onlyPetugas'])->group(function(){
 });
 
 Route::middleware(['auth', 'onlyKasir'])->group(function(){
+
+    Route::get('/member', [MemberController::class, 'index']);
+
+    Route::get('/tambah-member', [MemberController::class, 'create'])->name('member.create');
+    Route::post('/tambah-member', [MemberController::class, 'store'])->name('member.store');
+
     Route::get('/pelanggan', [PelangganController::class, 'index']);
     Route::get('/tambah-pelanggan', [PelangganController::class, 'tambah']);
     Route::post('/tambah-pelanggan', [PelangganController::class, 'insert']);
