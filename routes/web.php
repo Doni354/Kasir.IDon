@@ -118,7 +118,7 @@ Route::middleware(['auth', 'onlyPetugas'])->group(function(){
 Route::middleware(['auth', 'onlyKasir'])->group(function(){
 
     Route::get('/member', [MemberController::class, 'index']);
-
+    Route::delete('/member/{id}', [MemberController::class, 'destroy'])->name('member.destroy');
     Route::get('/tambah-member', [MemberController::class, 'create'])->name('member.create');
     Route::post('/tambah-member', [MemberController::class, 'store'])->name('member.store');
 

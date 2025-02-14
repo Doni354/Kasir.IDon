@@ -12,20 +12,10 @@
                     {{ session('msg') }}
                 </div>
             @endif
-            @if($errors->any())
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
 
             <div class="d-flex justify-content-between mb-3">
                 <h5 class="mb-0">Daftar Member</h5>
-                <a href="/tambah-member" class="btn btn-primary"><i class="fa fa-plus"></i> Tambah Member</a>
+                <a href="{{ route('member.create') }}" class="btn btn-primary"><i class="fa fa-plus"></i> Tambah Member</a>
             </div>
 
             <table class="table table-bordered table-striped" id="dataTable">
@@ -58,6 +48,15 @@
                             <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#detailModal{{ $member->id }}">
                                 <i class="fa fa-eye"></i> Detail
                             </button>
+
+                            <!-- Tombol Hapus -->
+                            <form action="{{ route('member.destroy', $member->id) }}" method="POST" class="d-inline">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin menghapus member ini?')">
+                                    <i class="fa fa-trash"></i> Hapus
+                                </button>
+                            </form>
                         </td>
                     </tr>
 
@@ -67,7 +66,6 @@
                             <div class="modal-content">
                                 <div class="modal-header bg-primary text-white">
                                     <h5 class="modal-title" id="detailModalLabel{{ $member->id }}">Detail Member</h5>
-
                                 </div>
                                 <div class="modal-body">
                                     <div class="mb-3">
@@ -108,30 +106,6 @@
         </div>
     </div>
 </div>
-
-
-
-
-    <div class="modal fade" id="DeleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                <div class="modal-body">Are you sure want to Delete this items? <br> Press the "Delete" Button to proceed</div>
-                <div class="modal-footer">
-
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-
-
-                </div>
-            </div>
-        </div>
-    </div>
 @endsection
 
 @section('scripts')
@@ -147,4 +121,3 @@
     });
 </script>
 @endsection
-
