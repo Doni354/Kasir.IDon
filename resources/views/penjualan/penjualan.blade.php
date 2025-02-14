@@ -22,15 +22,59 @@
                 </div>
             @endif
 
-            <div class="d-flex justify-content-end mb-3">
-                <form action="/mulai-penjualan" method="POST">
+            <!-- Tombol Pilih Pelanggan -->
+<div class="d-flex justify-content-end mb-3">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal">
+        <i class="fa fa-plus"></i> Pilih Pelanggan
+    </button>
+</div>
+
+<!-- Modal Pilih Member -->
+<div class="modal fade" id="modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Pilih Member</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/pilih-member" method="POST">
                     @csrf
-                    <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fa fa-plus"></i> Mulai Penjualan
-                    </button>
+                    <div class="mb-3">
+                        <label for="member_id" class="col-form-label">Member</label>
+                        <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
+                        <select name="member_id" id="member-select" class="form-select">
+                            <option value="">-- Pilih Member (Opsional) --</option>
+                            @foreach ($member as $item)
+                                <option value="{{ $item->id }}">
+                                    {{ $item->nama }} - {{ $item->phone }} - {{ $item->email }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Pilih</button>
+                    </div>
                 </form>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tambahkan jQuery dan Select2 -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#member-select').select2({
+            width: '100%',
+            placeholder: "Cari Member...",
+            allowClear: true
+        });
+    });
+</script>
+
 
             <table class="table">
                 <thead>
@@ -52,7 +96,7 @@
                             <td>{{ $item->kode_penjualan }}</td>
                             <td>Rp. {{ number_format($item->total_harga) }}</td>
                             <td>Rp. {{ number_format($item->bayar) }}</td>
-                            
+                            <td>{{ $item->user->name }}</td>
                             <td>
                                 <a class="btn btn-danger btn-sm" onclick="return confirm('Apakah anda yakin ingin menghapus penjualan ini?')" href="/hapus-penjualan/{{ $item->kode_penjualan }}"><i class="fa fa-trash"></i> Hapus</a>
                             </td>

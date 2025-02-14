@@ -26,4 +26,6 @@ class Produk extends Model
         ->sum('qty');
 }
 
+
+
 }

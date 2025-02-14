@@ -13,6 +13,10 @@ class Penjualan extends Model
     public function detailPenjualan(){
         return $this->hasMany(detailPenjualan::class, 'kode_penjualan');
     }
+    public function member()
+{
+    return $this->belongsTo(Member::class, 'member_id');
+}
 
     public function user(){
         return $this->belongsTo(User::class, 'user_id');

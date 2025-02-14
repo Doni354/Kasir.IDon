@@ -122,13 +122,13 @@ Route::middleware(['auth', 'onlyKasir'])->group(function(){
     Route::get('/tambah-member', [MemberController::class, 'create'])->name('member.create');
     Route::post('/tambah-member', [MemberController::class, 'store'])->name('member.store');
 
+
     Route::get('/penjualan', [PenjualanController::class, 'index']);
-    Route::post('/mulai-penjualan', [PenjualanController::class, 'mulai']);
+    Route::post('/pilih-member', [PenjualanController::class, 'mulai'])->name('mulai.penjualan');
     Route::get('proses-penjualan={kode_penjualan}', [PenjualanController::class, 'proses'])->name('proses.penjualan');
     Route::post('/pilih-produk', [PenjualanController::class, 'store']);
     Route::get('/hapus-produk={detailPenjualan:id}', [PenjualanController::class, 'delete']);
     Route::post('/bayar/{penjualan:kode_penjualan}', [PenjualanController::class, 'bayar']);
     Route::get('/nota-penjualan/{penjualan:kode_penjualan}', [PenjualanController::class, 'nota']);
-
     Route::get('/hapus-penjualan/{penjualan:kode_penjualan}', [PenjualanController::class, 'deletePenjualan']);
 });

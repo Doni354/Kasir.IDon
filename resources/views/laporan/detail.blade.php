@@ -5,9 +5,8 @@
     <div class="row mb-3 p-4 bg-light">
         <div class="col-6">
             <ul class="list-unstyled">
-                <li><strong>Pelanggan : {{ $penjualan->pelanggan->nama }}</strong></li>
-                <li><strong>Telp : {{ $penjualan->pelanggan->telp }}</strong></li>
-                <li><strong>Alamat : {{ $penjualan->pelanggan->alamat }}</strong></li>
+                <li><strong>Member:</strong> {{ $penjualan->member_id ? $penjualan->member->nama : 'Non Membership' }}</li>
+                <li><strong>Poin:</strong> {{ $penjualan->member_id ? $penjualan->member->poin : '-' }}</li>
             </ul>
         </div>
         <div class="col-6 text-end">
@@ -25,18 +24,28 @@
                     <tr>
                         <th scope="col">#</th>
                         <th scope="col">Produk</th>
+                        <th scope="col">Jumlah</th>
                         <th scope="col">Harga</th>
-                        <th scope="col">Qty</th>
+
                         <th scope="col">Subtotal</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($detailPenjualan as $item)
+                    @php
+                        $hargaDasar = $item->produk->price;
+                        $markup = ($item->harga_satuan / 1.12) - $hargaDasar;
+                        $hargaSetelahMarkup = $hargaDasar + $markup;
+                        $ppn = $hargaSetelahMarkup * 12 / 100;
+                        $hargaAkhir = $hargaSetelahMarkup + $ppn;
+                        $subtotal = $hargaAkhir * $item->qty;
+                    @endphp
                         <tr>
                             <td >{{ $loop->iteration }}</td>
-                            <td>{{ $item->produk->nama }}</td>
-                            <td>Rp. {{ number_format($item->produk->harga) }}</td>
+                            <td>{{ $item->produk->name }}</td>
                             <td>{{ $item->qty }}</td>
+                            <td>Rp. {{ number_format($hargaAkhir) }}</td>
+
                             <td>Rp. {{ number_format($item->subtotal) }}</td>
                         </tr>
                     @endforeach

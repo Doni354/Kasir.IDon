@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <!-- Icon Font Stylesheet -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
@@ -26,13 +26,13 @@
 </head>
 <body class="bg-white">
     <div class="container">
-        <h2 class="text-center mb-5 mt-5">Nota Penjualan</h2><hr>    
+        <h2 class="text-center mb-5 mt-5">Nota Penjualan</h2><hr>
         <div class="row">
             <div class="col-6">
                 <ul class="list-unstyled">
-                    <li><strong>Pelanggan : {{ $penjualan->pelanggan->nama }}</strong></li>
-                    <li><strong>Telp : {{ $penjualan->pelanggan->telp }}</strong></li>
-                    <li><strong>Alamat : {{ $penjualan->pelanggan->alamat }}</strong></li>
+                    <li><strong>Member:</strong> {{ $penjualan->member_id ? $penjualan->member->nama : 'Non Membership' }}</li>
+                    <li><strong>Poin:</strong> {{ $penjualan->member_id ? $penjualan->member->poin : '-' }}</li>
+
                 </ul>
             </div>
             <div class="col-6 text-end">
@@ -56,11 +56,19 @@
                     </thead>
                     <tbody>
                         @foreach ($detail as $item)
+                        @php
+                        $hargaDasar = $item->produk->price;
+                        $markup = ($item->harga_satuan / 1.12) - $hargaDasar;
+                        $hargaSetelahMarkup = $hargaDasar + $markup;
+                        $ppn = $hargaSetelahMarkup * 12 / 100;
+                        $hargaAkhir = $hargaSetelahMarkup + $ppn;
+                        $subtotal = $hargaAkhir * $item->qty;
+                    @endphp
                             <tr>
                                 <td >{{ $loop->iteration }}</td>
-                                <td>{{ $item->produk->nama }}</td>
+                                <td>{{ $item->produk->name }}</td>
                                 <td>{{ $item->qty }}</td>
-                                <td>Rp. {{ number_format($item->produk->harga) }}</td>
+                                <td>Rp. {{ number_format($hargaAkhir) }}</td>
                                 <td>Rp. {{ number_format($item->subtotal) }}</td>
                             </tr>
                         @endforeach
@@ -75,7 +83,7 @@
                 </ul>
             </div>
         </div>
-        <h2 class="text-center">Terima Kasih</h2>
+        <h2 class="text-center">Kasir.IDon</h2>
     </div>
 </body>
 </html>
