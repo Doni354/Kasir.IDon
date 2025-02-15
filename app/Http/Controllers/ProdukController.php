@@ -21,7 +21,11 @@ class ProdukController extends Controller
         $categories = Category::all();
         return view('produk.create', compact('categories'));
     }
-
+    public function getProductsByCategory(Request $request)
+    {
+        $products = Produk::where('category_id', $request->category_id)->get();
+        return response()->json($products);
+    }
     public function store(Request $request)
     {
         $request->validate([

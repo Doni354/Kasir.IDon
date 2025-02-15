@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Category;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\DiscountController;
 use App\Http\Controllers\MemberController;
 
 Route::get('/check-username', function (Request $request) {
@@ -67,6 +68,10 @@ Route::middleware(['auth'])->group(function(){
 });
 
 Route::middleware(['auth', 'onlyAdmin'])->group(function () {
+
+    Route::get('/discount', [DiscountController::class, 'index']);
+    Route::get('/discount-tambah', [DiscountController::class, 'create'])->name('discount.create');
+    Route::post('/discount/store', [DiscountController::class, 'store'])->name('discount.store');
     Route::get('/produk-tambah', [ProdukController::class, 'create'])->name('produk.create');
     Route::post('/produk/store', [ProdukController::class, 'store'])->name('produk.store');
     Route::get('/edit-produk={id}', [ProdukController::class, 'edit'])->name('produk.edit');
@@ -84,6 +89,8 @@ Route::middleware(['auth', 'onlyAdmin'])->group(function () {
 });
 Route::get('/categories/search', [CategoryController::class, 'search'])->name('categories.search');
 Route::get('/products/search', [ProdukController::class, 'search'])->name('products.search');
+
+Route::get('/products/by-category', [ProdukController::class, 'getProductsByCategory'])->name('products.byCategory');
 
 Route::middleware(['auth', 'onlyAdmin'])->group(function(){
     Route::get('/logs', [LogController::class, 'index'])->name('logs.index');

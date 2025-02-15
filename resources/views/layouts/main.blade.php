@@ -96,6 +96,12 @@
                     <i class="fas fa-shapes"></i>
                     <span>Category</span></a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/discount">
+                    <i class="fas fa-tags"></i>
+                    <span>Discount</span></a>
+            </li>
+
             @endif
             @if(auth()->user()->role === 'kasir')
             <div class="sidebar-heading">
