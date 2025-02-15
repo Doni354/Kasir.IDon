@@ -127,6 +127,8 @@ Route::middleware(['auth', 'onlyPetugas'])->group(function(){
 });
 
 Route::middleware(['auth', 'onlyKasir'])->group(function(){
+    Route::get('/apply-discount/{detail_id}/{discount_id}', [PenjualanController::class, 'applyDiscount'])->name('apply.discount');
+    Route::get('/cancel-discount/{detail_id}', [PenjualanController::class, 'cancelDiscount'])->name('cancel.discount');
 
     Route::get('/member', [MemberController::class, 'index']);
     Route::delete('/member/{id}', [MemberController::class, 'destroy'])->name('member.destroy');

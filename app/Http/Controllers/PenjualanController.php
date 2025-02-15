@@ -128,11 +128,9 @@ public function bayar(Penjualan $penjualan, Request $request)
     if ($penjualan->member) {
         $member = $penjualan->member;
 
-        // Tambah poin
+        // Tambah poin (misal: 1 poin per Rp1000 pembelian)
         $poinTambahan = floor($total_harga / 1000);
         $member->poin += $poinTambahan;
-
-        // Tambah total belanja secara manual
         $member->total_belanja = $member->total_belanja + $total_harga;
 
         // Update type member jika memenuhi syarat
@@ -142,8 +140,10 @@ public function bayar(Penjualan $penjualan, Request $request)
             $member->type = 2;
         }
 
-        // Simpan perubahan
         $member->save();
+
+        session()->flash('poin_tambahan', $poinTambahan);
+        session()->flash('poin_total', $member->poin);
     }
 
     $penjualan->update();
@@ -155,6 +155,7 @@ public function bayar(Penjualan $penjualan, Request $request)
         'kembalian' => $kembalian,
     ]);
 }
+
 
 
 
@@ -182,6 +183,78 @@ public function delete(DetailPenjualan $detailPenjualan)
 }
 
 
+
+public function applyDiscount($detail_id, $discount_id)
+{
+    // Ambil data detail penjualan dan diskon
+    $detail = DetailPenjualan::findOrFail($detail_id);
+    $discount = \App\Models\Discount::findOrFail($discount_id);
+
+    // Pastikan diskon sesuai dengan produk di detail penjualan
+    if ($detail->produk_id != $discount->product_id) {
+        return redirect()->back()->with('msg', 'Diskon tidak sesuai dengan produk.');
+    }
+
+    // Ambil data penjualan dan member (jika ada)
+    $penjualan = Penjualan::where('kode_penjualan', $detail->kode_penjualan)->first();
+    $member = $penjualan ? $penjualan->member : null;
+
+    // Jika diskon membutuhkan poin, pastikan member ada dan memiliki poin yang cukup
+    if ($discount->needed_poin > 0) {
+        if (!$member) {
+            return redirect()->back()->with('msg', 'Diskon ini hanya berlaku untuk member.');
+        }
+        if ($member->poin < $discount->needed_poin) {
+            return redirect()->back()->with('msg', 'Poin member tidak mencukupi untuk menggunakan diskon ini.');
+        }
+        // Kurangi poin member
+        $member->decrement('poin', $discount->needed_poin);
+    }
+
+    // Hitung jumlah asli (tanpa diskon)
+    $originalAmount = $detail->harga_satuan * $detail->qty;
+    // Hitung potongan diskon (dalam rupiah)
+    $discountAmount = ($discount->discount / 100) * $originalAmount;
+
+    // Update detail penjualan
+    $detail->update([
+        'discount_id'      => $discount->id,
+        'discount_applied' => true,
+        'discount_amount'  => $discountAmount,
+        'subtotal'         => $originalAmount - $discountAmount,
+    ]);
+
+    return redirect()->back()->with('msg', 'Diskon berhasil diterapkan.');
+}
+
+public function cancelDiscount($detail_id)
+{
+    $detail = DetailPenjualan::findOrFail($detail_id);
+
+    if (!$detail->discount_applied) {
+        return redirect()->back()->with('msg', 'Tidak ada diskon yang diterapkan.');
+    }
+
+    $discount = \App\Models\Discount::find($detail->discount_id);
+    $penjualan = Penjualan::where('kode_penjualan', $detail->kode_penjualan)->first();
+    $member = $penjualan ? $penjualan->member : null;
+
+    // Kembalikan poin ke member jika diperlukan
+    if ($discount && $discount->needed_poin > 0 && $member) {
+        $member->increment('poin', $discount->needed_poin);
+    }
+
+    $originalAmount = $detail->harga_satuan * $detail->qty;
+
+    $detail->update([
+        'discount_id'      => null,
+        'discount_applied' => false,
+        'discount_amount'  => 0,
+        'subtotal'         => $originalAmount,
+    ]);
+
+    return redirect()->back()->with('msg', 'Diskon telah dibatalkan dan poin dikembalikan.');
+}
 
 
 
