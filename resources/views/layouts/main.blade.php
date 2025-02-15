@@ -84,6 +84,12 @@
                     <i class="fas fa-box"></i>
                     <span>Product</span></a>
             </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/discount">
+                    <i class="fas fa-tags"></i>
+                    <span>Discount</span></a>
+            </li>
             @if(auth()->user()->role === 'admin')
             <li class="nav-item">
                 <a class="nav-link" href="/stok">
@@ -96,11 +102,7 @@
                     <i class="fas fa-shapes"></i>
                     <span>Category</span></a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/discount">
-                    <i class="fas fa-tags"></i>
-                    <span>Discount</span></a>
-            </li>
+
 
             @endif
             @if(auth()->user()->role === 'kasir')

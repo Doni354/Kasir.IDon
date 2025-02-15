@@ -10,7 +10,7 @@
 <div class="container mt-4">
     <h4 class="mb-4 text-primary">Daftar Diskon</h4>
 
-    @if(auth()->user()->role == 'admin')
+    @if(auth()->user()->role == 'admin' || auth()->user()->role == 'petugas')
         <div class="d-flex justify-content-end mb-3">
             <a href="/discount-tambah" class="btn btn-primary"><i class="fa fa-plus"></i> Buat Discount</a>
         </div>
@@ -58,9 +58,11 @@
                         <td><span class="{{ $validClass }}">{{ $validStatus }}</span></td>
                         <td>{{ $validUntil->format('d M Y') }}</td>
                         <td>
+
                             <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#detailModal{{ $discount->id }}">
                                 <i class="fa fa-eye"></i> Detail
                             </button>
+                            @if(auth()->user()->role == 'admin' || auth()->user()->role == 'petugas')
                             <a href="{{ route('discount.edit', $discount->id) }}" class="btn btn-warning btn-sm">
                                 <i class="fa fa-edit"></i> Edit
                             </a>
@@ -71,6 +73,8 @@
                                     <i class="fa fa-trash"></i> Hapus
                                 </button>
                             </form>
+                        @endif
+
                         </td>
                     </tr>
 

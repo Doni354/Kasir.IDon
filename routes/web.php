@@ -65,6 +65,7 @@ Route::middleware(['auth'])->group(function(){
     });
 
     Route::get('/produk', [ProdukController::class, 'index']);
+    Route::get('/discount', [DiscountController::class, 'index']);
 });
 
 Route::middleware(['auth', 'onlyAdmin'])->group(function () {
@@ -72,7 +73,7 @@ Route::middleware(['auth', 'onlyAdmin'])->group(function () {
     Route::put('/discount/{id}', [DiscountController::class, 'update'])->name('discount.update');
     Route::delete('/discount/{discount}', [DiscountController::class, 'destroy'])->name('discount.destroy');
 
-    Route::get('/discount', [DiscountController::class, 'index']);
+
     Route::get('/discount-tambah', [DiscountController::class, 'create'])->name('discount.create');
     Route::post('/discount/store', [DiscountController::class, 'store'])->name('discount.store');
     Route::get('/produk-tambah', [ProdukController::class, 'create'])->name('produk.create');
