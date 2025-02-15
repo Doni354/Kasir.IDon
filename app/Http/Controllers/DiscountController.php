@@ -80,5 +80,11 @@ public function update(Request $request, $id)
 
     return redirect('/discount')->with('msg', 'Diskon berhasil diperbarui!');
 }
+public function destroy(Discount $discount)
+{
+    $discount->update(['status' => 0]); // Soft delete dengan mengubah status
+    return redirect('/discount')->with('msg', 'Diskon berhasil dihapus!');
+}
+
 
 }

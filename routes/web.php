@@ -70,6 +70,7 @@ Route::middleware(['auth'])->group(function(){
 Route::middleware(['auth', 'onlyAdmin'])->group(function () {
     Route::get('/discount-edit={id}', [DiscountController::class, 'edit'])->name('discount.edit');
     Route::put('/discount/{id}', [DiscountController::class, 'update'])->name('discount.update');
+    Route::delete('/discount/{discount}', [DiscountController::class, 'destroy'])->name('discount.destroy');
 
     Route::get('/discount', [DiscountController::class, 'index']);
     Route::get('/discount-tambah', [DiscountController::class, 'create'])->name('discount.create');
