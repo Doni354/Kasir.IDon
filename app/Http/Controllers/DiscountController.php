@@ -53,5 +53,32 @@ public function store(Request $request)
 
     return redirect('/discount')->with('msg', 'Diskon berhasil ditambahkan!');
 }
+public function edit($id)
+{
+    $discount = Discount::findOrFail($id);
+    $categories = Category::all();
+    $products = Produk::all();
+
+    return view('discount.edit', compact('discount', 'categories', 'products'));
+}
+public function update(Request $request, $id)
+{
+    $discount = Discount::findOrFail($id);
+
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'discount' => 'required|numeric|min:1|max:100',
+        'valid_until' => 'required|date',
+        'category_id' => 'nullable|exists:category,id',
+        'product_id' => 'nullable|exists:products,id',
+        'min_qty' => 'nullable|numeric|min:0',
+        'min_price' => 'nullable|numeric|min:0',
+        'needed_poin' => 'nullable|numeric|min:0',
+    ]);
+
+    $discount->update($request->all());
+
+    return redirect('/discount')->with('msg', 'Diskon berhasil diperbarui!');
+}
 
 }

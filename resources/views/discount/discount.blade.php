@@ -61,6 +61,9 @@
                             <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#detailModal{{ $discount->id }}">
                                 <i class="fa fa-eye"></i> Detail
                             </button>
+                            <a href="{{ route('discount.edit', $discount->id) }}" class="btn btn-warning btn-sm">
+                                <i class="fa fa-edit"></i> Edit
+                            </a>
                         </td>
                     </tr>
 
