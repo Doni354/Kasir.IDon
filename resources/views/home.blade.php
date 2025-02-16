@@ -1,5 +1,192 @@
 @extends('layouts.main')
-@section( 'title', 'Home')
+@section('title', 'Home')
 @section('content')
-<h1>Home</h1>
+<div class="container-fluid pt-4 px-4">
+  <!-- Grafik Transaksi Harian -->
+  <div class="row mb-5">
+    <div class="col-xl-8 col-lg-10 mx-auto">
+      <div class="card shadow-sm mb-4">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+          <h6 class="m-0 fw-bold text-primary">Grafik Transaksi Harian</h6>
+        </div>
+        <div class="card-body">
+          <div class="chart-area">
+            <canvas id="transaksiChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Data Barang Re-Order: Grafik & Tabel -->
+  <div class="row">
+    <div class="col-xl-8 col-lg-10 mx-auto">
+      <div class="card shadow-sm mb-4">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+          <h6 class="m-0 fw-bold text-primary">Data Barang Re-Order</h6>
+        </div>
+        <div class="card-body">
+          <!-- Grafik Re-Order -->
+          <div class="chart-area mb-4">
+            <canvas id="reorderChart"></canvas>
+          </div>
+          <!-- Tabel Re-Order -->
+          <div class="table-responsive">
+            <table id="reorderTable" class="table table-striped table-hover align-middle">
+              <thead class="table-dark">
+                <tr>
+                  <th>#</th>
+                  <th>Nama Produk</th>
+                  <th>Harga</th>
+                  <th>Kategori</th>
+                  <th>Stok</th>
+                </tr>
+              </thead>
+              <tbody>
+                @foreach($reorderProducts as $index => $product)
+                  <tr>
+                    <td>{{ $index + 1 }}</td>
+                    <td>{{ $product->name }}</td>
+                    <td>Rp. {{ number_format($product->price, 2, ',', '.') }}</td>
+                    <td>{{ $product->kategori->name ?? '-' }}</td>
+                    <td>{{ $product->totalStok() }}</td>
+                  </tr>
+                @endforeach
+              </tbody>
+            </table>
+          </div>
+        </div> <!-- End Card Body -->
+      </div> <!-- End Card -->
+    </div>
+  </div>
+</div>
+@endsection
+
+@section('scripts')
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- DataTables CSS & JS for Tabel Re-Order -->
+<link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function(){
+    // Grafik Transaksi Harian
+    const ctxTrans = document.getElementById("transaksiChart").getContext("2d");
+    const transaksiChart = new Chart(ctxTrans, {
+      type: 'line',
+      data: {
+        labels: {!! json_encode($transLabels) !!},
+        datasets: [{
+          label: "Total Transaksi (Rp)",
+          data: {!! json_encode($transData) !!},
+          fill: false,
+          backgroundColor: "rgba(78, 115, 223, 0.05)",
+          borderColor: "rgba(78, 115, 223, 1)",
+          tension: 0.3,
+          pointRadius: 3,
+          pointBackgroundColor: "rgba(78, 115, 223, 1)",
+          pointBorderColor: "rgba(78, 115, 223, 1)",
+          pointHoverRadius: 3,
+          pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
+          pointHitRadius: 10,
+          pointBorderWidth: 2,
+        }]
+      },
+      options: {
+        scales: {
+          x: {
+            title: { display: true, text: 'Tanggal' },
+            grid: { display: false },
+            ticks: { maxTicksLimit: 7 }
+          },
+          y: {
+            title: { display: true, text: 'Total Transaksi (Rp)' },
+            ticks: {
+              callback: function(value) { return 'Rp. ' + value.toLocaleString(); }
+            },
+            grid: {
+              color: "rgba(234, 236, 244, 1)",
+              zeroLineColor: "rgba(234, 236, 244, 1)",
+              drawBorder: false,
+              borderDash: [2],
+              zeroLineBorderDash: [2]
+            }
+          }
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                let label = context.dataset.label || '';
+                if (label) label += ': ';
+                if (context.parsed.y !== null) {
+                  label += 'Rp. ' + context.parsed.y.toLocaleString();
+                }
+                return label;
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // Grafik Re-Order
+    const ctxReorder = document.getElementById("reorderChart").getContext("2d");
+    const reorderChart = new Chart(ctxReorder, {
+      type: 'line',
+      data: {
+        labels: {!! json_encode($reorderLabels) !!},
+        datasets: [{
+          label: "Stok Barang",
+          data: {!! json_encode($reorderData) !!},
+          fill: false,
+          backgroundColor: "rgba(231, 74, 59, 0.05)",
+          borderColor: "rgba(231, 74, 59, 1)",
+          tension: 0.3,
+          pointRadius: 3,
+          pointBackgroundColor: "rgba(231, 74, 59, 1)",
+          pointBorderColor: "rgba(231, 74, 59, 1)",
+          pointHoverRadius: 3,
+          pointHoverBackgroundColor: "rgba(231, 74, 59, 1)",
+          pointHitRadius: 10,
+          pointBorderWidth: 2,
+        }]
+      },
+      options: {
+        scales: {
+          x: {
+            title: { display: true, text: 'Produk' },
+            grid: { display: false },
+            ticks: {
+              maxRotation: 45,
+              minRotation: 45
+            }
+          },
+          y: {
+            title: { display: true, text: 'Stok' },
+            ticks: { stepSize: 1 }
+          }
+        },
+        plugins: {
+          legend: { display: false }
+        }
+      }
+    });
+
+    // Inisialisasi DataTables untuk tabel Re-Order
+    $('#reorderTable').DataTable({
+      language: {
+        search: "Cari:",
+        lengthMenu: "Tampilkan _MENU_ data",
+        info: "Menampilkan _START_ - _END_ dari _TOTAL_ data",
+        paginate: { next: "Selanjutnya", previous: "Sebelumnya" }
+      },
+      order: [[4, "asc"]]
+    });
+  });
+</script>
 @endsection

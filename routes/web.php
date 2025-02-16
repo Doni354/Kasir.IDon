@@ -3,6 +3,7 @@
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\PelangganController;
 use App\Http\Controllers\PenjualanController;
+use App\Http\Controllers\HomeCOntroller;
 use App\Http\Controllers\StokController;
 use App\Models\Produk;
 use Illuminate\Support\Facades\Route;
@@ -60,9 +61,7 @@ Route::middleware(['guest'])->group(function(){
 
 Route::middleware(['auth'])->group(function(){
     Route::get('/logout', [SesiController::class, 'logout']);
-    Route::get('/home', function (){
-        return view('/home');
-    });
+    Route::get('/home', [HomeCOntroller::class, 'index']);
 
     Route::get('/produk', [ProdukController::class, 'index']);
     Route::get('/discount', [DiscountController::class, 'index']);
