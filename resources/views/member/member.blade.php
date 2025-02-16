@@ -18,6 +18,7 @@
                 <a href="{{ route('member.create') }}" class="btn btn-primary"><i class="fa fa-plus"></i> Tambah Member</a>
             </div>
 
+
             <table class="table table-bordered table-hover" id="dataTable">
                 <thead class="table-dark">
                     <tr>
