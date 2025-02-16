@@ -66,6 +66,8 @@ Route::middleware(['auth'])->group(function(){
 
     Route::get('/produk', [ProdukController::class, 'index']);
     Route::get('/discount', [DiscountController::class, 'index']);
+    Route::get('/cetak-nota-penjualan/{kode_penjualan}', [PenjualanController::class, 'cetakNota'])->name('cetak.nota');
+
 });
 
 Route::middleware(['auth', 'onlyAdmin'])->group(function () {

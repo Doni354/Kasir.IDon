@@ -275,5 +275,14 @@ public function cancelDiscount($detail_id)
         $penjualan->delete();
         return back()->with('msg', 'Semua Data penjualan ini berhasil dihapus');
     }
+    public function cetakNota($kode_penjualan)
+    {
+        $penjualan = Penjualan::where('kode_penjualan', $kode_penjualan)->with('member')->firstOrFail();
+        $detail = DetailPenjualan::where('kode_penjualan', $kode_penjualan)->get();
+
+        // Menggunakan view khusus cetak atau bisa sama dengan nota.blade.php,
+        // hanya saja di-blade kita tambahkan window.print().
+        return view('penjualan.cetak-nota', compact('penjualan', 'detail'));
+    }
 
 }

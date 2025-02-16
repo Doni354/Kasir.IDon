@@ -218,16 +218,19 @@
                         <button class="btn btn-primary" type="submit" @if($penjualan->status == 'paid') disabled @endif>
                             <i class="fa fa-credit-card"></i> Bayar
                         </button>
-                        @if($penjualan->status = 'paid')
+                        @if($penjualan->status == 'paid')
 
-                            <a class="btn btn-success" href="/nota-penjualan/{{ $penjualan->kode_penjualan }}">
+                            <!-- Tombol Cetak Nota -->
+                            <a class="btn btn-success" href="{{ route('cetak.nota', $penjualan->kode_penjualan) }}" target="_blank">
                                 <i class="fa fa-download"></i> Nota
                             </a>
+
+                            <!-- Tombol Kembali -->
                             <a class="btn btn-info" onclick="return confirm('Apakah anda ingin meninggalkan halaman ini? Data transaksi sudah tersimpan')" href="/penjualan">
                                 <i class="fa fa-arrow-right"></i> Back
                             </a>
-
                         @endif
+
                     </div>
                 </div>
             </form>
