@@ -138,46 +138,7 @@
                 </table>
             </div>
             <hr>
-            <!-- Form Pembayaran -->
-            <form action="/bayar/{{ $penjualan->kode_penjualan }}" method="POST">
-                @csrf
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Bayar</label>
-                        <input type="hidden" name="total_harga" value="{{ $total_harga }}">
-                        <input type="number" name="bayar" class="form-control" @if($penjualan->status == 'paid') disabled @endif>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Kembalian</label>
-                        <input type="number" name="kembalian" class="form-control" disabled>
-                    </div>
-                    <div class="col-md-12">
-                        <button class="btn btn-primary" type="submit" @if($penjualan->status == 'paid') disabled @endif>
-                            <i class="fa fa-credit-card"></i> Bayar
-                        </button>
-                        @if(session('status'))
-                            <a class="btn btn-success" href="/nota-penjualan/{{ $penjualan->kode_penjualan }}">
-                                <i class="fa fa-download"></i> Nota
-                            </a>
-                            <a class="btn btn-info" onclick="return confirm('Apakah anda ingin meninggalkan halaman ini? Data transaksi sudah tersimpan')" href="/penjualan">
-                                <i class="fa fa-arrow-right"></i> Back
-                            </a>
-                        @endif
-                    </div>
-                </div>
-            </form>
-
-            <!-- Tampilan Informasi Poin Member Setelah Pembayaran -->
-            @if(session('poin_tambahan'))
-            <div class="alert alert-info mt-3">
-                <strong>Poin Tambahan:</strong> {{ session('poin_tambahan') }} <br>
-                <strong>Total Poin Baru:</strong> {{ session('poin_total') }}
-            </div>
-            @endif
-        </div>
-    </div>
-
-    <!-- Tabel Diskon Tersedia -->
+             <!-- Tabel Diskon Tersedia -->
     <div class="row g-4">
         <div class="bg-light rounded h-100 p-4">
             <h6 class="mb-4">Daftar Diskon Tersedia</h6>
@@ -220,7 +181,7 @@
                                             -
                                         @endif
                                     </td>
-                                    <td>
+                                    <td>@if($penjualan->status != 'paid')
                                         @if($item->discount_applied && $item->discount_id == $availableDiscount->id)
                                             <a href="{{ route('cancel.discount', $item->id) }}" class="btn btn-warning btn-sm">
                                                 <i class="fa fa-times"></i> Batalkan Diskon
@@ -229,6 +190,7 @@
                                             <a href="{{ route('apply.discount', ['detail_id' => $item->id, 'discount_id' => $availableDiscount->id]) }}" class="btn btn-success btn-sm">
                                                 <i class="fa fa-check"></i> Gunakan Diskon
                                             </a>
+                                        @endif
                                         @endif
                                     </td>
                                 </tr>
@@ -239,6 +201,48 @@
             </div>
         </div>
     </div>
+            <!-- Form Pembayaran -->
+            <form action="/bayar/{{ $penjualan->kode_penjualan }}" method="POST">
+                @csrf
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Bayar</label>
+                        <input type="hidden" name="total_harga" value="{{ $total_harga }}">
+                        <input type="number" name="bayar" class="form-control" @if($penjualan->status == 'paid') disabled @endif>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Kembalian</label>
+                        <input type="number" name="kembalian" class="form-control" disabled>
+                    </div>
+                    <div class="col-md-12">
+                        <button class="btn btn-primary" type="submit" @if($penjualan->status == 'paid') disabled @endif>
+                            <i class="fa fa-credit-card"></i> Bayar
+                        </button>
+                        @if($penjualan->status = 'paid')
+
+                            <a class="btn btn-success" href="/nota-penjualan/{{ $penjualan->kode_penjualan }}">
+                                <i class="fa fa-download"></i> Nota
+                            </a>
+                            <a class="btn btn-info" onclick="return confirm('Apakah anda ingin meninggalkan halaman ini? Data transaksi sudah tersimpan')" href="/penjualan">
+                                <i class="fa fa-arrow-right"></i> Back
+                            </a>
+
+                        @endif
+                    </div>
+                </div>
+            </form>
+
+            <!-- Tampilan Informasi Poin Member Setelah Pembayaran -->
+            @if(session('poin_tambahan'))
+            <div class="alert alert-info mt-3">
+                <strong>Poin Tambahan:</strong> {{ session('poin_tambahan') }} <br>
+                <strong>Total Poin Baru:</strong> {{ session('poin_total') }}
+            </div>
+            @endif
+        </div>
+    </div>
+
+
 
 </div>
 @endsection
