@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <title>Nota - {{ $penjualan->kode_penjualan }}</title>
+  <title>Nota Penjualan - {{ $penjualan->kode_penjualan }}</title>
   <style>
     /* RESET & BASE */
     * {
@@ -19,14 +18,10 @@
       background: #fff;
       margin: 20px;
     }
-
-    /* CONTAINER */
     .container {
       max-width: 800px;
       margin: 0 auto;
     }
-
-    /* HEADER & FOOTER */
     .header, .footer {
       text-align: center;
       margin-bottom: 15px;
@@ -34,9 +29,11 @@
     .header h2 {
       font-size: 20px;
       margin-bottom: 5px;
+      font-weight: bold;
     }
-
-    /* TABLES */
+    .header p {
+      margin: 2px 0;
+    }
     table {
       width: 100%;
       border-collapse: collapse;
@@ -54,13 +51,11 @@
     }
     .text-right {
       text-align: right;
-      white-space: nowrap; /* Agar "Rp." menempel dengan angkanya */
+      white-space: nowrap;
     }
     .no-border {
       border: none !important;
     }
-
-    /* SUMMARY TABLE */
     .summary-table td {
       border: none;
       padding: 3px;
@@ -76,7 +71,7 @@
       <p><strong>Tanggal:</strong> {{ $penjualan->tgl }}</p>
     </div>
 
-    <!-- INFO MEMBER (Jika Ada) -->
+    <!-- INFO MEMBER -->
     <table>
       <tr>
         <td>
@@ -86,24 +81,14 @@
         <td class="text-right">
           @if($penjualan->member_id)
             @php
-              // Hitung total poin yang dikurangi dari diskon
-              $poin_deducted = 0;
-              foreach($detail as $item) {
-                if($item->discount_applied && $item->discount_id) {
-                  $disc = \App\Models\Discount::find($item->discount_id);
-                  if($disc && $disc->needed_poin) {
-                    $poin_deducted += $disc->needed_poin;
-                  }
-                }
-              }
-              // Poin yang didapat dari pembayaran (di-set di session oleh controller)
-              $poin_gained = session('poin_tambahan', 0);
-              // Poin saat ini
-              $current_poin = $penjualan->member->poin;
-              // Asumsi: poin awal = poin sekarang + poin yang didapat - poin yang dikurangi
-              $initial_poin = $current_poin + $poin_gained - $poin_deducted;
+              // Ambil data poin dari penjualan
+              $used_poin = $penjualan->used_poin ?? 0;
+              $get_poin  = $penjualan->get_poin ?? 0;
+              $current_point = $penjualan->member->poin;
+              // Poin Awal = current poin + used_poin - get_poin
+              $initial_point = $current_point + $used_poin - $get_poin;
             @endphp
-            <strong>Poin Awal:</strong> {{ $initial_poin }}
+            <strong>Poin Awal:</strong> {{ $initial_point }}
           @else
             -
           @endif
@@ -111,8 +96,8 @@
       </tr>
       @if($penjualan->member_id)
       <tr>
-        <td><strong>Poin Dikurangi (Diskon):</strong> {{ $poin_deducted }}</td>
-        <td class="text-right"><strong>Poin Didapat:</strong> {{ $poin_gained }}</td>
+        <td><strong>Poin Dikurangi (Diskon):</strong> {{ $used_poin }}</td>
+        <td class="text-right"><strong>Poin Didapat:</strong> {{ $get_poin }}</td>
       </tr>
       <tr>
         <td colspan="2" class="text-right">
@@ -129,53 +114,57 @@
           <th>#</th>
           <th>Produk</th>
           <th>Qty</th>
-          <th>Harga Dasar</th>
+          <th>Harga </th>
           <th>PPN (12%)</th>
           <th>Harga Akhir</th>
           <th>Subtotal</th>
-          <th>Keterangan Diskon</th>
+          <th>Diskon</th>
         </tr>
       </thead>
       <tbody>
         @php
           $total = 0;
           $totalPPN = 0;
+          $totalDiscount = 0;
         @endphp
         @foreach($detail as $index => $item)
           @php
-            $hargaDasar = $item->produk->price;
-            // PPN 12% dari hargaDasar
-            $ppn = $hargaDasar * 0.12;
-            $hargaAkhir = $hargaDasar + $ppn;
-
-            // Jika harga_satuan sudah termasuk markup, sesuaikan rumus
-            // atau cukup pakai $hargaDasar + PPN sesuai logika Anda.
-
-            $originalSubtotal = $hargaAkhir * $item->qty;
-            $subtotal = $item->discount_applied ? $item->subtotal : $originalSubtotal;
+            // Ambil harga jual final yang sudah tersimpan di detail->harga_satuan (sudah termasuk PPN)
+            $finalPrice = $item->harga_satuan;
+            // Harga setelah markup = finalPrice dibagi 1.12
+            $hargaSetelahMarkup = $finalPrice / 1.12;
+            // PPN per unit = 12% dari harga setelah markup
+            $ppn_per_unit = $hargaSetelahMarkup * 0.12;
+            // Subtotal asli per item = finalPrice * qty
+            $subtotal_original = $finalPrice * $item->qty;
+            // Jika ada diskon, gunakan nilai discount_amount dari detail
+            $subtotal = $item->discount_applied ? $item->subtotal : $subtotal_original;
             $total += $subtotal;
-            $totalPPN += $ppn * $item->qty;
+            $totalPPN += $ppn_per_unit * $item->qty;
+            if($item->discount_applied) {
+              $totalDiscount += $item->discount_amount;
+            }
           @endphp
           <tr>
             <td>{{ $index + 1 }}</td>
             <td>{{ $item->produk->name }}</td>
             <td class="text-right">{{ $item->qty }}</td>
-            <td class="text-right">Rp. {{ number_format($hargaDasar, 2, ',', '.') }}</td>
-            <td class="text-right">Rp. {{ number_format($ppn, 2, ',', '.') }}</td>
-            <td class="text-right">Rp. {{ number_format($hargaAkhir, 2, ',', '.') }}</td>
+            <td class="text-right">Rp. {{ number_format($hargaSetelahMarkup, 2, ',', '.') }}</td>
+            <td class="text-right">Rp. {{ number_format($ppn_per_unit, 2, ',', '.') }}</td>
+            <td class="text-right">Rp. {{ number_format($finalPrice, 2, ',', '.') }}</td>
             <td class="text-right">
               @if($item->discount_applied)
-                <del>Rp. {{ number_format($originalSubtotal, 2, ',', '.') }}</del><br>
+                <del>Rp. {{ number_format($subtotal_original, 2, ',', '.') }}</del><br>
                 <span>Rp. {{ number_format($subtotal, 2, ',', '.') }}</span>
               @else
-                Rp. {{ number_format($subtotal, 2, ',', '.') }}
+                Rp. {{ number_format($subtotal_original, 2, ',', '.') }}
               @endif
             </td>
             <td>
               @if($item->discount_applied)
                 @php $disc = \App\Models\Discount::find($item->discount_id); @endphp
-                Diskon: {{ $disc->discount }}% <br>
-                Potongan: Rp. {{ number_format($item->discount_amount, 2, ',', '.') }} <br>
+                Diskon: {{ $disc->discount }}%<br>
+                Potongan: Rp. {{ number_format($item->discount_amount, 2, ',', '.') }}<br>
                 @if($disc->needed_poin > 0)
                   Poin dikurangi: {{ $disc->needed_poin }} poin
                 @endif
@@ -186,15 +175,18 @@
           </tr>
         @endforeach
         <tr>
-          <td colspan="5" class="text-right"><strong>Total Harga</strong></td>
-          <td colspan="2" class="text-right"><strong>Rp. {{ number_format($total, 2, ',', '.') }}</strong></td>
+          <td colspan="6" class="text-right"><strong>Total Harga</strong></td>
+          <td class="text-right"><strong>Rp. {{ number_format($total, 2, ',', '.') }}</strong></td>
           <td></td>
         </tr>
         <tr>
-          <td colspan="5" class="text-right"><strong>Total PPN (12%)</strong></td>
-          <td colspan="2" class="text-right">
-            <strong>Rp. {{ number_format($totalPPN, 2, ',', '.') }}</strong>
-          </td>
+          <td colspan="6" class="text-right"><strong>Total PPN (12%)</strong></td>
+          <td class="text-right"><strong>Rp. {{ number_format($totalPPN, 2, ',', '.') }}</strong></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td colspan="6" class="text-right"><strong>Total Diskon</strong></td>
+          <td class="text-right"><strong>Rp. {{ number_format($totalDiscount, 2, ',', '.') }}</strong></td>
           <td></td>
         </tr>
       </tbody>
@@ -212,9 +204,7 @@
       </tr>
       <tr>
         <td class="no-border text-right"><strong>Kembalian:</strong></td>
-        <td class="no-border text-right">
-          Rp. {{ number_format($penjualan->bayar - $penjualan->total_harga, 2, ',', '.') }}
-        </td>
+        <td class="no-border text-right">Rp. {{ number_format($penjualan->bayar - $penjualan->total_harga, 2, ',', '.') }}</td>
       </tr>
     </table>
 

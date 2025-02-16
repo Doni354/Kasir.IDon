@@ -108,7 +108,6 @@ public function store(Request $request)
 
     return back()->with('msg', 'Produk Berhasil Ditambahkan ke Keranjang');
 }
-
 public function bayar(Penjualan $penjualan, Request $request)
 {
     $request->validate(['bayar' => 'required']);
@@ -121,19 +120,47 @@ public function bayar(Penjualan $penjualan, Request $request)
         return back()->with('msg', 'Masukan uang yang cukup');
     }
 
+    // Set data pembayaran dan status
     $penjualan->bayar = $bayar;
     $penjualan->total_harga = $total_harga;
     $penjualan->status = 'paid';
 
+    // Ambil semua detail penjualan yang terkait dengan kode penjualan ini
+    $details = \App\Models\DetailPenjualan::where('kode_penjualan', $penjualan->kode_penjualan)->get();
+
+    $totalMarkup = 0;
+    $totalPPN = 0;
+    $totalDiskon = 0;
+    $totalUsedPoin = 0;
+
+    foreach ($details as $detail) {
+        $totalMarkup += $detail->markup;                   // Jumlahkan semua markup
+        $totalPPN    += $detail->ppn;                      // Jumlahkan semua PPN (pastikan kolom ppn ada pada detail)
+        $totalDiskon += $detail->discount_amount;          // Jumlahkan semua diskon (nilai potongan rupiah)
+
+        if ($detail->discount_applied && $detail->discount_id) {
+            $disc = \App\Models\Discount::find($detail->discount_id);
+            if ($disc && $disc->needed_poin) {
+                $totalUsedPoin += $disc->needed_poin;
+            }
+        }
+    }
+
+    // Simpan hasil penjumlahan ke kolom di penjualan
+    $penjualan->markup = $totalMarkup;
+    $penjualan->ppn    = $totalPPN;
+    $penjualan->diskon = $totalDiskon;
+
+    // Jika transaksi dilakukan oleh member
     if ($penjualan->member) {
         $member = $penjualan->member;
 
-        // Tambah poin (misal: 1 poin per Rp1000 pembelian)
+        // Tambah poin: misalnya 1 poin per Rp1000 pembelian
         $poinTambahan = floor($total_harga / 1000);
         $member->poin += $poinTambahan;
-        $member->total_belanja = $member->total_belanja + $total_harga;
+        $member->total_belanja += $total_harga;
 
-        // Update type member jika memenuhi syarat
+        // Update tipe member jika memenuhi syarat
         if ($member->total_belanja >= 5000000) {
             $member->type = 3;
         } elseif ($member->total_belanja >= 1000000) {
@@ -142,6 +169,11 @@ public function bayar(Penjualan $penjualan, Request $request)
 
         $member->save();
 
+        // Simpan data poin yang digunakan dan yang didapat
+        $penjualan->used_poin = $totalUsedPoin;
+        $penjualan->get_poin  = $poinTambahan;
+
+        // Flash data poin untuk ditampilkan di nota
         session()->flash('poin_tambahan', $poinTambahan);
         session()->flash('poin_total', $member->poin);
     }
@@ -155,6 +187,7 @@ public function bayar(Penjualan $penjualan, Request $request)
         'kembalian' => $kembalian,
     ]);
 }
+
 
 
 
