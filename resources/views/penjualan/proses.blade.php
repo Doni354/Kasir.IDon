@@ -208,32 +208,35 @@
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Bayar</label>
                         <input type="hidden" name="total_harga" value="{{ $total_harga }}">
-                        <input type="number" name="bayar" class="form-control" @if($penjualan->status == 'paid') disabled @endif>
+                        <input type="number" name="bayar" class="form-control"
+                               value="{{ old('bayar', $penjualan->bayar == 0 ? '' : $penjualan->bayar) }}"
+                               @if($penjualan->status == 'paid') disabled @endif>
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Kembalian</label>
-                        <input type="number" name="kembalian" class="form-control" disabled>
+                        <input type="number" name="kembalian" class="form-control"
+                               value="{{ session('kembalian') == 0 ? '' : session('kembalian') }}"
+                               disabled>
                     </div>
                     <div class="col-md-12">
-                        <button class="btn btn-primary" type="submit" @if($penjualan->status == 'paid') disabled @endif>
+                        <button class="btn btn-primary" type="submit"
+                                @if($penjualan->status == 'paid') disabled @endif>
                             <i class="fa fa-credit-card"></i> Bayar
                         </button>
                         @if($penjualan->status == 'paid')
-
                             <!-- Tombol Cetak Nota -->
                             <a class="btn btn-success" href="{{ route('cetak.nota', $penjualan->kode_penjualan) }}" target="_blank">
                                 <i class="fa fa-download"></i> Nota
                             </a>
-
                             <!-- Tombol Kembali -->
                             <a class="btn btn-info" onclick="return confirm('Apakah anda ingin meninggalkan halaman ini? Data transaksi sudah tersimpan')" href="/penjualan">
                                 <i class="fa fa-arrow-right"></i> Back
                             </a>
                         @endif
-
                     </div>
                 </div>
             </form>
+
 
             <!-- Tampilan Informasi Poin Member Setelah Pembayaran -->
             @if(session('poin_tambahan'))

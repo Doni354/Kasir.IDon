@@ -108,36 +108,58 @@ public function store(Request $request)
 
     return back()->with('msg', 'Produk Berhasil Ditambahkan ke Keranjang');
 }
+
 public function bayar(Penjualan $penjualan, Request $request)
 {
+    // Validasi input pembayaran
     $request->validate(['bayar' => 'required']);
 
-    $bayar = $request->bayar;
+    $bayar       = $request->bayar;
     $total_harga = $request->total_harga;
-    $kembalian = $bayar - $total_harga;
+    $kembalian   = $bayar - $total_harga;
 
     if ($bayar < $total_harga) {
         return back()->with('msg', 'Masukan uang yang cukup');
     }
 
-    // Set data pembayaran dan status
-    $penjualan->bayar = $bayar;
+    // Set data pembayaran dan status penjualan
+    $penjualan->bayar       = $bayar;
     $penjualan->total_harga = $total_harga;
-    $penjualan->status = 'paid';
+    $penjualan->status      = 'paid';
 
-    // Ambil semua detail penjualan yang terkait dengan kode penjualan ini
+    // Ambil semua detail penjualan berdasarkan kode penjualan
     $details = \App\Models\DetailPenjualan::where('kode_penjualan', $penjualan->kode_penjualan)->get();
 
-    $totalMarkup = 0;
-    $totalPPN = 0;
-    $totalDiskon = 0;
+    $totalMarkup   = 0;
+    $totalPPN      = 0;
+    $totalDiscount = 0;
     $totalUsedPoin = 0;
+    $total         = 0; // Total perhitungan item (jika dibutuhkan)
 
     foreach ($details as $detail) {
-        $totalMarkup += $detail->markup;                   // Jumlahkan semua markup
-        $totalPPN    += $detail->ppn;                      // Jumlahkan semua PPN (pastikan kolom ppn ada pada detail)
-        $totalDiskon += $detail->discount_amount;          // Jumlahkan semua diskon (nilai potongan rupiah)
+        // Ambil harga jual final per unit (sudah termasuk PPN)
+        $finalPrice = $detail->harga_satuan;
+        // Harga setelah markup: finalPrice dibagi 1.12
+        $hargaSetelahMarkup = $finalPrice / 1.12;
+        // PPN per unit: 12% dari harga setelah markup
+        $ppn_per_unit = $hargaSetelahMarkup * 0.12;
+        // Subtotal asli per item: finalPrice dikalikan qty
+        $subtotal_original = $finalPrice * $detail->qty;
+        // Jika ada diskon, gunakan nilai subtotal yang tersimpan di detail, jika tidak gunakan subtotal asli
+        $subtotal = $detail->discount_applied ? $detail->subtotal : $subtotal_original;
 
+        // Tambahkan subtotal ke total
+        $total += $subtotal;
+        // Hitung total PPN berdasarkan jumlah unit
+        $totalPPN += $ppn_per_unit * $detail->qty;
+        // Tambahkan diskon jika ada
+        if ($detail->discount_applied) {
+            $totalDiscount += $detail->discount_amount;
+        }
+        // Tambahkan markup (jika diperlukan)
+        $totalMarkup += $detail->markup;
+
+        // Periksa dan hitung poin yang digunakan dari diskon (jika ada)
         if ($detail->discount_applied && $detail->discount_id) {
             $disc = \App\Models\Discount::find($detail->discount_id);
             if ($disc && $disc->needed_poin) {
@@ -146,10 +168,10 @@ public function bayar(Penjualan $penjualan, Request $request)
         }
     }
 
-    // Simpan hasil penjumlahan ke kolom di penjualan
+    // Simpan hasil perhitungan ke penjualan
     $penjualan->markup = $totalMarkup;
-    $penjualan->ppn    = $totalPPN;
-    $penjualan->diskon = $totalDiskon;
+    $penjualan->ppn    = $totalPPN;       // Simpan total PPN yang sudah dihitung
+    $penjualan->diskon = $totalDiscount;
 
     // Jika transaksi dilakukan oleh member
     if ($penjualan->member) {
@@ -157,7 +179,7 @@ public function bayar(Penjualan $penjualan, Request $request)
 
         // Tambah poin: misalnya 1 poin per Rp1000 pembelian
         $poinTambahan = floor($total_harga / 1000);
-        $member->poin += $poinTambahan;
+        $member->poin         += $poinTambahan;
         $member->total_belanja += $total_harga;
 
         // Update tipe member jika memenuhi syarat
@@ -178,12 +200,13 @@ public function bayar(Penjualan $penjualan, Request $request)
         session()->flash('poin_total', $member->poin);
     }
 
-    $penjualan->update();
+    // Simpan perubahan pada penjualan
+    $penjualan->save();
 
     return back()->with([
-        'msg' => 'Pembayaran Berhasil',
-        'status' => true,
-        'bayar' => $bayar,
+        'msg'       => 'Pembayaran Berhasil',
+        'status'    => true,
+        'bayar'     => $bayar,
         'kembalian' => $kembalian,
     ]);
 }
