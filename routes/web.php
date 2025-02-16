@@ -96,6 +96,7 @@ Route::get('/categories/search', [CategoryController::class, 'search'])->name('c
 Route::get('/products/search', [ProdukController::class, 'search'])->name('products.search');
 
 Route::get('/products/by-category', [ProdukController::class, 'getProductsByCategory'])->name('products.byCategory');
+Route::get('/products/by-categoryDiscount', [DiscountController::class, 'getProductsByCategory'])->name('products.byCategoryDiscount');
 
 Route::middleware(['auth', 'onlyAdmin'])->group(function(){
     Route::get('/logs', [LogController::class, 'index'])->name('logs.index');

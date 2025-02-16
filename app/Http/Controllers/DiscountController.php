@@ -25,6 +25,19 @@ class DiscountController extends Controller
 
     return view('discount.create', compact('products', 'categories'));
 }
+public function getProductsByCategory(Request $request)
+{
+    $categoryId = $request->category_id;
+
+    // Ambil produk dalam kategori yang dipilih
+    $products = Produk::where('category_id', $categoryId)
+        ->whereNotIn('id', function($query) {
+            $query->select('product_id')->from('discount'); // Produk yang sudah ada di diskon
+        })
+        ->get();
+
+    return response()->json($products);
+}
 
 public function store(Request $request)
 {
@@ -32,12 +45,12 @@ public function store(Request $request)
         'name' => 'required|string|max:255',
         'discount' => 'required|numeric|min:1|max:100',
         'valid_until' => 'required|date',
-        'needed_poin' => 'nullable|integer|min:0',
-        'min_qty' => 'nullable|integer|min:1',
-        'min_price' => 'nullable|numeric|min:0',
-        'product_id' => 'nullable|exists:products,id',
-        'category_id' => 'nullable|exists:category,id',
+        'category_id' => 'required|exists:category,id',
+        'product_id' => 'required|exists:products,id',
+        'min_qty' => 'required|numeric|min:1',
+        'needed_poin' => 'nullable|numeric|min:0',
     ]);
+
 
     Discount::create([
         'name' => $request->name,
@@ -45,7 +58,6 @@ public function store(Request $request)
         'valid_until' => $request->valid_until,
         'needed_poin' => $request->needed_poin,
         'min_qty' => $request->min_qty,
-        'min_price' => $request->min_price,
         'product_id' => $request->product_id,
         'category_id' => $request->category_id,
         'status' => 1,
@@ -69,10 +81,9 @@ public function update(Request $request, $id)
         'name' => 'required|string|max:255',
         'discount' => 'required|numeric|min:1|max:100',
         'valid_until' => 'required|date',
-        'category_id' => 'nullable|exists:category,id',
-        'product_id' => 'nullable|exists:products,id',
-        'min_qty' => 'nullable|numeric|min:0',
-        'min_price' => 'nullable|numeric|min:0',
+        'category_id' => 'required|exists:category,id',
+        'product_id' => 'required|exists:products,id',
+        'min_qty' => 'required|numeric|min:q',
         'needed_poin' => 'nullable|numeric|min:0',
     ]);
 

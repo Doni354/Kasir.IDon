@@ -9,7 +9,7 @@ class Produk extends Model
 {
     use HasFactory;
 
-    protected $table = 'products'; // Sesuai dengan nama tabel di database
+    protected $table = 'products';
     protected $fillable = ['name', 'price', 'category_id'];
 
     // Relasi ke kategori

@@ -92,7 +92,6 @@
                                         <li class="list-group-item"><strong>Diskon:</strong> {{ $discount->discount }}%</li>
                                         <li class="list-group-item"><strong>Poin Dibutuhkan:</strong> {{ $discount->needed_poin ?? '-' }}</li>
                                         <li class="list-group-item"><strong>Minimal Kuantitas:</strong> {{ $discount->min_qty ?? '-' }}</li>
-                                        <li class="list-group-item"><strong>Minimal Harga:</strong> Rp {{ number_format($discount->min_price, 2) }}</li>
                                         <li class="list-group-item"><strong>Produk:</strong> {{ $discount->product->name ?? '-' }}</li>
                                         <li class="list-group-item"><strong>Kategori:</strong> {{ $discount->category->name ?? '-' }}</li>
                                         <li class="list-group-item"><strong>Berlaku Sampai:</strong> {{ $validUntil->format('d M Y') }}</li>
