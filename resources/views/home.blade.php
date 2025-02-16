@@ -2,6 +2,131 @@
 @section('title', 'Home')
 @section('content')
 <div class="container-fluid pt-4 px-4">
+
+
+    <!-- Content Row -->
+    <div class="row">
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            @php
+              // Tentukan rentang tanggal bulan ini
+              $start = date('Y-m-01');
+              $end = date('Y-m-t');
+
+              // Ambil data penjualan pada bulan ini
+              $monthlyData = \App\Models\Penjualan::whereBetween('tgl', [$start, $end])->get();
+
+              // Jumlahkan total markup dan total diskon dari seluruh transaksi bulan ini
+              $totalMarkup = $monthlyData->sum('markup');
+              $totalDiskon = $monthlyData->sum('diskon');
+
+              // Keuntungan = Total Markup - Total Diskon
+              $keuntungan = $totalMarkup - $totalDiskon;
+            @endphp
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Earnings (Monthly)
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                Rp. {{ number_format($keuntungan, 0, ',', '.') }}
+                            </div>
+
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            @php
+              // Mengambil total PPN dari seluruh transaksi.
+              // Jika ingin periode tertentu, tambahkan whereBetween atau filter sesuai kebutuhan.
+              $totalPPN = \App\Models\Penjualan::sum('ppn');
+            @endphp
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Total PPN (12%)
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                Rp. {{ number_format($totalPPN, 0, ',', '.') }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            @php
+                 $totalHargaProduk = \App\Models\Produk::all()->sum(function($p) {
+                     return $p->price * $p->totalStok();
+                 });
+            @endphp
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Total Harga Produk (Stok)
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                Rp. {{ number_format($totalHargaProduk, 2, ',', '.') }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-box-open fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            @php
+                // Menghitung total harga produk yang sudah expired.
+                // Pastikan untuk mengganti \App\Models\Stok sesuai namespace yang benar.
+                $totalExpiredPrice = \App\Models\Produk::all()->sum(function($p) {
+                    return $p->price * $p->hasMany(\App\Models\Stok::class, 'product_id', 'id')
+                        ->where('expired_date', '<=', now())
+                        ->where('status', 1)
+                        ->sum('qty');
+                });
+            @endphp
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Total Harga Produk Expired
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                - Rp. {{ number_format($totalExpiredPrice, 2, ',', '.') }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-box fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
   <!-- Grafik Transaksi Harian -->
   <div class="row mb-5">
     <div class="col-xl-8 col-lg-10 mx-auto">
