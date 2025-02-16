@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 class UserController extends Controller
 {
     public function index(){
-        $user = User::all();
+        $user = User::where('status', 1)->get();
         return view('user.user', compact('user'));
     }
 
@@ -87,22 +87,25 @@ class UserController extends Controller
     }
 
 
-    public function delete(User $user)
-    {
-        $oldData = $user->toArray();
-        $this->logAction(
-            Auth::id(), 'DELETE', 'users',
-            'User ' . $user->name . ' telah dihapus.',
-            $user->id,
-            $oldData,
-            null
-        );
+   public function delete(User $user)
+{
+    $oldData = $user->toArray();
 
-        $user->delete();
+    // Catat log perubahan
+    $this->logAction(
+        Auth::id(), 'DELETE', 'users',
+        'User ' . $user->name . ' telah dihapus.',
+        $user->id,
+        $oldData,
+        ['status' => 0]
+    );
 
+    // Ubah status menjadi 0
+    $user->fill(['status' => 0])->save();
 
-        return back()->with('msg', 'User Berhasil dihapus');
-    }
+    return back()->with('msg', 'User berhasil di-Hapus');
+}
+
 
 
     private function logAction($userId, $action, $model, $msg, $recordId = null, $oldData = null, $newData = null)
