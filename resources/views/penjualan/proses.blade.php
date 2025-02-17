@@ -13,7 +13,7 @@
                                 <li>{{ $error }}</li>
                             @endforeach
                         </ul>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        
                     </div>
                 @endif
 
@@ -55,7 +55,7 @@
     @if(session('msg'))
     <div class="alert alert-info alert-dismissible fade show" role="alert">
         <strong>Info: </strong> {{ session('msg') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+
     </div>
 @endif
 
