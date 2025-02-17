@@ -30,8 +30,13 @@ class HomeController extends Controller
         $reorderData   = $reorderProducts->map(function ($p) {
             return $p->totalStok();
         })->toArray();
+        $produk = Produk::all();
+        $produkLabels = $produk->pluck('name')->toArray();
+        $produkData   = $produk->map(function ($p) {
+            return $p->totalStok();
+        })->toArray();
 
-        return view('home', compact('transLabels', 'transData', 'reorderProducts', 'reorderLabels', 'reorderData'));
+        return view('home', compact('produkLabels', 'produkData', 'transLabels', 'transData', 'reorderProducts', 'reorderLabels', 'reorderData'));
     }
 
 }

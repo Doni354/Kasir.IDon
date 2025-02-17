@@ -142,6 +142,23 @@
       </div>
     </div>
   </div>
+  <div class="row">
+    <div class="col-xl-8 col-lg-10 mx-auto">
+      <div class="card shadow-sm mb-4">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h2>Grafik Stok Semua Produk</h2>
+            <!-- Canvas untuk Chart -->
+
+        </div>
+        <div class="card-body">
+            <div class="chart-area">
+            <canvas id="chartSemuaProduk" width="400" height="200"></canvas>
+            </div>
+          <!-- Tabel Re-Order -->
+        </div> <!-- End Card Body -->
+      </div> <!-- End Card -->
+    </div>
+  </div>
 
   <!-- Data Barang Re-Order: Grafik & Tabel -->
   <div class="row">
@@ -151,10 +168,7 @@
           <h6 class="m-0 fw-bold text-primary">Data Barang Re-Order</h6>
         </div>
         <div class="card-body">
-          <!-- Grafik Re-Order -->
-          <div class="chart-area mb-4">
-            <canvas id="reorderChart"></canvas>
-          </div>
+
           <!-- Tabel Re-Order -->
           <div class="table-responsive">
             <table id="reorderTable" class="table table-striped table-hover align-middle">
@@ -259,47 +273,34 @@
       }
     });
 
-    // Grafik Re-Order
-    const ctxReorder = document.getElementById("reorderChart").getContext("2d");
-    const reorderChart = new Chart(ctxReorder, {
-      type: 'line',
-      data: {
-        labels: {!! json_encode($reorderLabels) !!},
-        datasets: [{
-          label: "Stok Barang",
-          data: {!! json_encode($reorderData) !!},
-          fill: false,
-          backgroundColor: "rgba(231, 74, 59, 0.05)",
-          borderColor: "rgba(231, 74, 59, 1)",
-          tension: 0.3,
-          pointRadius: 3,
-          pointBackgroundColor: "rgba(231, 74, 59, 1)",
-          pointBorderColor: "rgba(231, 74, 59, 1)",
-          pointHoverRadius: 3,
-          pointHoverBackgroundColor: "rgba(231, 74, 59, 1)",
-          pointHitRadius: 10,
-          pointBorderWidth: 2,
-        }]
-      },
-      options: {
-        scales: {
-          x: {
-            title: { display: true, text: 'Produk' },
-            grid: { display: false },
-            ticks: {
-              maxRotation: 45,
-              minRotation: 45
-            }
-          },
-          y: {
-            title: { display: true, text: 'Stok' },
-            ticks: { stepSize: 1 }
-          }
+// Konversi data PHP ke format JSON agar dapat digunakan di JS
+    const labels = {!! json_encode($produkLabels) !!};
+    const dataStok = {!! json_encode($produkData) !!};
+
+    const ctx = document.getElementById('chartSemuaProduk').getContext('2d');
+    const chartSemuaProduk = new Chart(ctx, {
+        type: 'bar', // tipe grafik, misalnya bar chart
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Stok Produk',
+                data: dataStok,
+                backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
         },
-        plugins: {
-          legend: { display: false }
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        // Menghindari tampilan angka pecahan
+                        precision: 0
+                    }
+                }
+            }
         }
-      }
     });
 
     // Inisialisasi DataTables untuk tabel Re-Order
@@ -314,4 +315,8 @@
     });
   });
 </script>
+
+
+
+
 @endsection
