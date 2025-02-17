@@ -142,23 +142,24 @@
       </div>
     </div>
   </div>
-  <div class="row">
+
+  <!-- Grafik Transaksi Harian -->
+  <div class="row mb-5">
     <div class="col-xl-8 col-lg-10 mx-auto">
       <div class="card shadow-sm mb-4">
         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-            <h2>Grafik Stok Semua Produk</h2>
-            <!-- Canvas untuk Chart -->
-
+          <h6 class="m-0 fw-bold text-primary">Grafik Stok Produk</h6>
         </div>
         <div class="card-body">
-            <div class="chart-area">
+          <div class="chart-area">
             <canvas id="chartSemuaProduk" width="400" height="200"></canvas>
-            </div>
-          <!-- Tabel Re-Order -->
-        </div> <!-- End Card Body -->
-      </div> <!-- End Card -->
+          </div>
+        </div>
+      </div>
     </div>
   </div>
+
+
 
   <!-- Data Barang Re-Order: Grafik & Tabel -->
   <div class="row">
