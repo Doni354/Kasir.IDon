@@ -127,6 +127,74 @@
         </div>
 
     </div>
+
+    <div class="row">
+        <div class="col-xl-3 col-md-6 mb-4">
+            @php
+                // Ambil tanggal hari ini
+                $today = date('Y-m-d');
+
+                // Ambil data penjualan pada hari ini
+                $todayData = \App\Models\Penjualan::whereDate('tgl', $today)->get();
+
+                // Jumlahkan total markup dan total diskon dari transaksi hari ini
+                $totalMarkup = $todayData->sum('markup');
+                $totalDiskon = $todayData->sum('diskon');
+
+                // Keuntungan = Total Markup - Total Diskon
+                $keuntungan = $totalMarkup - $totalDiskon;
+            @endphp
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Earnings (Today)
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                Rp. {{ number_format($keuntungan, 0, ',', '.') }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar-day fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            @php
+                // Ambil seluruh data penjualan tanpa batasan tanggal
+                $allData = \App\Models\Penjualan::all();
+
+                // Jumlahkan total markup dan total diskon dari seluruh transaksi
+                $totalMarkup = $allData->sum('markup');
+                $totalDiskon = $allData->sum('diskon');
+
+                // Keuntungan = Total Markup - Total Diskon
+                $keuntungan = $totalMarkup - $totalDiskon;
+            @endphp
+             <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Earnings (All Time)
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                Rp. {{ number_format($keuntungan, 0, ',', '.') }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
   <!-- Grafik Transaksi Harian -->
   <div class="row mb-5">
     <div class="col-xl-8 col-lg-10 mx-auto">

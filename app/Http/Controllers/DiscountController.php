@@ -28,16 +28,23 @@ class DiscountController extends Controller
 public function getProductsByCategory(Request $request)
 {
     $categoryId = $request->category_id;
+    // Mengambil tanggal hari ini dalam format Y-m-d
+    $today = date('Y-m-d');
 
-    // Ambil produk dalam kategori yang dipilih
     $products = Produk::where('category_id', $categoryId)
-        ->whereNotIn('id', function($query) {
-            $query->select('product_id')->from('discount'); // Produk yang sudah ada di diskon
+        ->whereNotIn('id', function($query) use ($today) {
+            $query->select('product_id')
+                  ->from('discount')
+                  // Hanya pertimbangkan diskon dengan status 1 atau 0
+                  ->whereIn('status', [1, 0])
+                  // Diskon aktif jika valid_until hari ini atau di masa depan
+                  ->whereDate('valid_until', '>=', $today);
         })
         ->get();
 
     return response()->json($products);
 }
+
 
 public function store(Request $request)
 {
