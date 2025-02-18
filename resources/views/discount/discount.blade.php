@@ -22,6 +22,7 @@
                 <tr>
                     <th>No</th>
                     <th>Nama</th>
+                    <th>Produk</th>
                     <th>Diskon</th>
                     <th>Status</th>
                     <th>Berlaku Hingga</th>
@@ -54,7 +55,9 @@
                     <tr class="text-center">
                         <td>{{ $index + 1 }}</td>
                         <td class="text-start">{{ $discount->name }}</td>
+                        <td class="fw-bold">{{ $discount->product->name ?? '-' }}</td>
                         <td class="fw-bold">{{ $discount->discount }}%</td>
+
                         <td><span class="{{ $validClass }}">{{ $validStatus }}</span></td>
                         <td>{{ $validUntil->format('d M Y') }}</td>
                         <td>
@@ -84,7 +87,7 @@
                             <div class="modal-content">
                                 <div class="modal-header bg-primary text-white">
                                     <h5 class="modal-title" id="detailModalLabel{{ $discount->id }}">Detail Diskon</h5>
-                                    
+
                                 </div>
                                 <div class="modal-body">
                                     <ul class="list-group">

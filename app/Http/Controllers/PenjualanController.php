@@ -33,7 +33,7 @@ class PenjualanController extends Controller
     public function proses($kode_penjualan)
     {
         $penjualan = Penjualan::with('member')->where('kode_penjualan', $kode_penjualan)->first();
-        $produk = Produk::all();
+        $produk = Produk::with('kategori')->where('status', 1)->get();
         $keranjang = DetailPenjualan::where('kode_penjualan', $kode_penjualan)->get();
         return view('/penjualan.proses', compact('penjualan', 'produk', 'keranjang'));
     }

@@ -24,7 +24,7 @@ class ProdukController extends Controller
     }
     public function getProductsByCategory(Request $request)
     {
-        $products = Produk::where('category_id', $request->category_id)->get();
+        $products = Produk::with('kategori')->where('status', 1)->where('category_id', $request->category_id)->get();
         return response()->json($products);
     }
     public function store(Request $request)
@@ -49,7 +49,7 @@ class ProdukController extends Controller
     public function edit($id)
     {
         $produk = Produk::findOrFail($id);
-        $categories = Category::all();
+        $categories = Category::with('kategori')->where('status', 1)->get();
         return view('produk.edit', compact('produk', 'categories'));
     }
 
