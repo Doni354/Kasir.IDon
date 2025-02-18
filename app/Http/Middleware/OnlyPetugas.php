@@ -16,7 +16,7 @@ class OnlyPetugas
      */
     public function handle(Request $request, Closure $next)
     {
-        if (auth()->user()->role != 'petugas') {
+        if (!in_array(auth()->user()->role, ['petugas', 'admin'])) {
             return redirect('/home'); // Redirect jika bukan petugas
         }
         return $next($request); // Lanjutkan request jika role adalah petugas

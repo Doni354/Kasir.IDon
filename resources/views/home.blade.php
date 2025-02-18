@@ -72,7 +72,7 @@
 
         <div class="col-xl-3 col-md-6 mb-4">
             @php
-                 $totalHargaProduk = \App\Models\Produk::all()->sum(function($p) {
+                 $totalHargaProduk = \App\Models\Produk::where('status', 1)->get()->sum(function($p) {
                      return $p->price * $p->totalStok();
                  });
             @endphp
@@ -100,7 +100,7 @@
             @php
                 // Menghitung total harga produk yang sudah expired.
                 // Pastikan untuk mengganti \App\Models\Stok sesuai namespace yang benar.
-                $totalExpiredPrice = \App\Models\Produk::all()->sum(function($p) {
+                $totalExpiredPrice = \App\Models\Produk::where('status', 1)->get()->sum(function($p) {
                     return $p->price * $p->hasMany(\App\Models\Stok::class, 'product_id', 'id')
                         ->where('expired_date', '<=', now())
                         ->where('status', 1)
@@ -235,9 +235,13 @@
                 $threshold = Carbon::today()->addDays(5)->toDateString();
 
                 // Ambil data stok yang belum expired dan mendekati expired (expired_date > hari ini dan <= threshold)
-                $nearExpiryStocks = \App\Models\Stok::whereDate('expired_date', '>', $today)
-                                        ->whereDate('expired_date', '<=', $threshold)
-                                        ->get();
+                $nearExpiryStocks = \App\Models\Stok::whereHas('product', function ($query) {
+        $query->where('status', 1);
+    })
+    ->whereDate('expired_date', '>', $today)
+    ->whereDate('expired_date', '<=', $threshold)
+    ->get();
+
 
                 // Jumlahkan total qty dari semua stok yang mendekati expired
                 $totalQtyNearExpiry = $nearExpiryStocks->sum('qty');

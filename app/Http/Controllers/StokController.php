@@ -11,10 +11,14 @@ use Illuminate\Support\Facades\Auth;
 class StokController extends Controller
 {
     public function index()
-    {
-        $stokList = Stok::with('product')->get();
-        return view('stok.stok', compact('stokList'));
-    }
+{
+    $stokList = Stok::whereHas('product', function ($query) {
+        $query->where('status', 1);
+    })->with('product')->get();
+
+    return view('stok.stok', compact('stokList'));
+}
+
 
     public function create()
     {

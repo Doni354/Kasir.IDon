@@ -10,10 +10,11 @@ use Illuminate\Support\Facades\Auth;
 class CategoryController extends Controller
 {
     public function index()
-    {
-        $categories = Category::all();
-        return view('category.category', compact('categories'));
-    }
+{
+    // Ambil hanya kategori dengan status 1 (aktif)
+    $categories = Category::where('status', 1)->get();
+    return view('category.category', compact('categories'));
+}
 
     public function search(Request $request)
     {
@@ -67,10 +68,12 @@ class CategoryController extends Controller
     {
         $oldData = $category->toArray();
 
-        $this->logAction(Auth::id(), 'delete', 'Category', 'Category ' . $category->name . ' telah dihapus.', $category->id, $oldData, null);
-        $category->delete();
+        // Update status menjadi 0
+        $category->update(['status' => 0]);
 
-        return back()->with('msg', 'Category berhasil dihapus.');
+        $this->logAction(Auth::id(), 'delete', 'Category', 'Category ' . $category->name . ' telah dinonaktifkan.', $category->id, $oldData, null);
+
+        return back()->with('msg', 'Category berhasil dinonaktifkan.');
     }
 
     private function logAction($userId, $action, $model, $msg, $recordId = null, $oldData = null, $newData = null)

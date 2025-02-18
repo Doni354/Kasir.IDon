@@ -22,7 +22,7 @@ class HomeController extends Controller
 
         // --- Data Barang Re-Order ---
         // Misal threshold reorder: stok < 10
-        $reorderProducts = Produk::all()->filter(function ($p) {
+        $reorderProducts = Produk::where('status', 1)->get()->filter(function ($p) {
             return $p->totalStok() < 10;
         });
 
@@ -30,7 +30,7 @@ class HomeController extends Controller
         $reorderData   = $reorderProducts->map(function ($p) {
             return $p->totalStok();
         })->toArray();
-        $produk = Produk::all();
+        $produk = Produk::where('status', 1)->get();
         $produkLabels = $produk->pluck('name')->toArray();
         $produkData   = $produk->map(function ($p) {
             return $p->totalStok();

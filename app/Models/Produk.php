@@ -10,7 +10,7 @@ class Produk extends Model
     use HasFactory;
 
     protected $table = 'products';
-    protected $fillable = ['name', 'price', 'category_id'];
+    protected $fillable = ['name', 'price', 'category_id', 'status'];
 
     // Relasi ke kategori
     public function kategori()

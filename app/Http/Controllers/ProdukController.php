@@ -12,7 +12,8 @@ class ProdukController extends Controller
 {
     public function index()
     {
-        $produk = Produk::with('kategori')->get();
+        $produk = Produk::with('kategori')->where('status', 1)->get();
+
         return view('produk.produk', compact('produk'));
     }
 
@@ -75,16 +76,19 @@ class ProdukController extends Controller
     }
 
     public function destroy($id)
-    {
-        $produk = Produk::findOrFail($id);
-        $oldData = $produk->toArray();
+{
+    $produk = Produk::findOrFail($id);
+    $oldData = $produk->toArray();
 
-        $this->logAction(Auth::id(), 'delete', 'Produk', 'Produk ' . $produk->name . ' telah dihapus.', $produk->id, $oldData, null);
+    // Soft delete dengan update status menjadi 0
+    $produk->update(['status' => 0]);
 
-        $produk->delete();
+    // Log perubahan
+    $this->logAction(Auth::id(), 'delete', 'Produk', 'Produk ' . $produk->name . ' telah dinonaktifkan.', $produk->id, $oldData, null);
 
-        return redirect('/produk')->with('msg', 'Produk berhasil dihapus.');
-    }
+    return redirect('/produk')->with('msg', 'Produk berhasil dinonaktifkan.');
+}
+
 
     public function search(Request $request)
     {

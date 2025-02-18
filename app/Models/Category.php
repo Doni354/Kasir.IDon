@@ -10,5 +10,5 @@ class Category extends Model
     use HasFactory;
 
     protected $table = 'category'; // Menentukan nama tabel yang benar
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'status'];
 }

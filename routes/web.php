@@ -88,11 +88,7 @@ Route::middleware(['auth', 'onlyAdmin'])->group(function(){
     Route::post('/cari', [LaporanController::class, 'search']);
     Route::get('/detail={penjualan:kode_penjualan}', [LaporanController::class, 'show']);
 
-    Route::get('/category', [CategoryController::class, 'index']);
-    Route::get('/tambah-category', [CategoryController::class, 'tambah']);
-    Route::post('/tambah-category', [CategoryController::class, 'insert']);
-    Route::get('/edit-category={category:id}', [CategoryController::class, 'edit']);
-    Route::put('/edit-category/{category:id}', [CategoryController::class, 'update']);
+
     Route::get('/hapus-category/{category:id}', [CategoryController::class, 'delete']);
     Route::get('/discount-edit={id}', [DiscountController::class, 'edit'])->name('discount.edit');
     Route::put('/discount/{id}', [DiscountController::class, 'update'])->name('discount.update');
@@ -100,20 +96,10 @@ Route::middleware(['auth', 'onlyAdmin'])->group(function(){
 
     Route::get('/discount-tambah', [DiscountController::class, 'create'])->name('discount.create');
     Route::post('/discount/store', [DiscountController::class, 'store'])->name('discount.store');
-    Route::get('/produk-tambah', [ProdukController::class, 'create'])->name('produk.create');
-    Route::post('/produk/store', [ProdukController::class, 'store'])->name('produk.store');
-    Route::get('/edit-produk={id}', [ProdukController::class, 'edit'])->name('produk.edit');
-    Route::post('/update-produk/{id}', [ProdukController::class, 'update'])->name('produk.update');
-    Route::delete('/hapus-produk={id}', [ProdukController::class, 'destroy'])->name('produk.destroy');
-    Route::get('/stok', [StokController::class, 'index']);
+
 
     Route::get('/laporan/export', [LaporanController::class, 'export'])->name('laporan.export');
-    Route::get('/stok-tambah', [StokController::class, 'create'])->name('stok.create');
-    Route::post('/stok-tambah', [StokController::class, 'store'])->name('stok.store');
-    Route::get('/stok-edit={id}', [StokController::class, 'edit'])->name('stok.edit');
-    Route::put('/stok-update/{id}', [StokController::class, 'update'])->name('stok.update');
-    Route::delete('/stok-delete/{id}', [StokController::class, 'destroy'])->name('stok.destroy');
-
+    
 });
 
 Route::middleware(['auth', 'onlyPetugas'])->group(function(){
