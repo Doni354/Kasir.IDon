@@ -7,6 +7,25 @@
         <div class="col-md-6">
             <h4 class="fw-bold">Laporan Penjualan</h4>
         </div>
+        <!-- Form Filter dan Export Laporan -->
+<form action="{{ route('laporan.export') }}" method="GET" class="mb-3">
+    <div class="row">
+        <div class="col-md-4">
+            <label for="from_date" class="form-label">Dari Tanggal:</label>
+            <input type="date" name="from_date" id="from_date" class="form-control">
+        </div>
+        <div class="col-md-4">
+            <label for="to_date" class="form-label">Sampai Tanggal:</label>
+            <input type="date" name="to_date" id="to_date" class="form-control">
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary">
+                <i class="fa fa-file-excel"></i> Export Laporan
+            </button>
+        </div>
+    </div>
+</form>
+
 
     </div>
 

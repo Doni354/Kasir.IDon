@@ -84,7 +84,7 @@ Route::middleware(['auth', 'onlyAdmin'])->group(function () {
     Route::delete('/hapus-produk={id}', [ProdukController::class, 'destroy'])->name('produk.destroy');
     Route::get('/stok', [StokController::class, 'index']);
 
-
+    Route::get('/laporan/export', [LaporanController::class, 'export'])->name('laporan.export');
     Route::get('/stok-tambah', [StokController::class, 'create'])->name('stok.create');
     Route::post('/stok-tambah', [StokController::class, 'store'])->name('stok.store');
     Route::get('/stok-edit={id}', [StokController::class, 'edit'])->name('stok.edit');
