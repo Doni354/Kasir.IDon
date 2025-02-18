@@ -84,10 +84,7 @@
                 }
             });
 
-            // Batasi tanggal agar tidak bisa memilih sebelum hari ini
-            let today = new Date().toISOString().split('T')[0];
-            document.getElementById("expired_date").setAttribute("min", today);
-            document.getElementById("buy_date").setAttribute("min", today);
+
         });
     </script>
 @endsection

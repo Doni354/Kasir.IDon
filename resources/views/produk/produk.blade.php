@@ -22,7 +22,7 @@
                 </div>
             @endif
 
-            @if(auth()->user()->role == 'admin')
+            @if(auth()->user()->role === 'admin' || auth()->user()->role === 'petugas')
             <div class="d-flex justify-content-end mb-3">
                 <a href="/produk-tambah" class="btn btn-primary"><i class="fa fa-plus"></i> Produk Baru</a>
             </div>

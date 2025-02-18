@@ -27,8 +27,8 @@ class StokController extends Controller
         $request->validate([
             'product_id'   => 'required|exists:products,id',
             'qty'          => 'required|integer|min:1',
-            'expired_date' => 'required|date|after:today',
-            'buy_date'     => 'required|date|after_or_equal:today',
+            'expired_date' => 'required|date',
+            'buy_date'     => 'required|date',
         ]);
 
         $stok = Stok::create($request->all());

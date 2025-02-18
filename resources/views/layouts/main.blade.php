@@ -87,13 +87,15 @@
                     <i class="fas fa-box"></i>
                     <span>Product</span></a>
             </li>
-
+            @if(auth()->user()->role === 'admin' || auth()->user()->role === 'kasir')
             <li class="nav-item">
                 <a class="nav-link" href="/discount">
                     <i class="fas fa-tags"></i>
                     <span>Discount</span></a>
             </li>
-            @if(auth()->user()->role === 'admin')
+            @endif
+            
+            @if(auth()->user()->role === 'admin' || auth()->user()->role === 'petugas')
             <li class="nav-item">
                 <a class="nav-link" href="/stok">
                     <i class="fas fa-boxes"></i>
