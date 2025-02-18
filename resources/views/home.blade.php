@@ -193,6 +193,38 @@
                 </div>
             </div>
         </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            @php
+                // Ambil tanggal hari ini menggunakan Carbon tanpa 'use', dengan namespace lengkap
+                $today = \Carbon\Carbon::today()->toDateString();
+
+                // Ambil data transaksi penjualan pada hari ini
+                $todayTransactions = \App\Models\Penjualan::whereDate('tgl', $today)->get();
+
+                // Menjumlahkan total harga dari transaksi hari ini
+                $totalToday = $todayTransactions->sum('total_harga');
+            @endphp
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Transaksi Harian (Hari Ini)
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                Rp. {{ number_format($totalToday, 2, ',', '.') }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar-day fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
         <div class="col-xl-3 col-md-6 mb-4">
             @php
                 use Carbon\Carbon;
