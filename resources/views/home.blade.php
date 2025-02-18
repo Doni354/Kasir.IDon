@@ -193,6 +193,41 @@
                 </div>
             </div>
         </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            @php
+                use Carbon\Carbon;
+
+                // Ambil tanggal hari ini
+                $today = Carbon::today()->toDateString();
+                // Tentukan batas 5 hari ke depan
+                $threshold = Carbon::today()->addDays(5)->toDateString();
+
+                // Ambil data stok yang belum expired dan mendekati expired (expired_date > hari ini dan <= threshold)
+                $nearExpiryStocks = \App\Models\Stok::whereDate('expired_date', '>', $today)
+                                        ->whereDate('expired_date', '<=', $threshold)
+                                        ->get();
+
+                // Jumlahkan total qty dari semua stok yang mendekati expired
+                $totalQtyNearExpiry = $nearExpiryStocks->sum('qty');
+            @endphp
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Stok Mendekati Expired
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                {{ number_format($totalQtyNearExpiry, 0, ',', '.') }} unit
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     </div>
   <!-- Grafik Transaksi Harian -->
