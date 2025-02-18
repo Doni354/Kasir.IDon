@@ -8,7 +8,7 @@ use App\Models\Stok;
 Use App\Models\Member;
 use App\Models\Penjualan;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Auth;
 class PenjualanController extends Controller
 {
     public function index(){
@@ -137,29 +137,20 @@ public function bayar(Penjualan $penjualan, Request $request)
     $total         = 0; // Total perhitungan item (jika dibutuhkan)
 
     foreach ($details as $detail) {
-        // Ambil harga jual final per unit (sudah termasuk PPN)
+        // Hitung harga, PPN, subtotal, dll.
         $finalPrice = $detail->harga_satuan;
-        // Harga setelah markup: finalPrice dibagi 1.12
         $hargaSetelahMarkup = $finalPrice / 1.12;
-        // PPN per unit: 12% dari harga setelah markup
         $ppn_per_unit = $hargaSetelahMarkup * 0.12;
-        // Subtotal asli per item: finalPrice dikalikan qty
         $subtotal_original = $finalPrice * $detail->qty;
-        // Jika ada diskon, gunakan nilai subtotal yang tersimpan di detail, jika tidak gunakan subtotal asli
         $subtotal = $detail->discount_applied ? $detail->subtotal : $subtotal_original;
 
-        // Tambahkan subtotal ke total
         $total += $subtotal;
-        // Hitung total PPN berdasarkan jumlah unit
         $totalPPN += $ppn_per_unit * $detail->qty;
-        // Tambahkan diskon jika ada
         if ($detail->discount_applied) {
             $totalDiscount += $detail->discount_amount;
         }
-        // Tambahkan markup (jika diperlukan)
         $totalMarkup += $detail->markup;
 
-        // Periksa dan hitung poin yang digunakan dari diskon (jika ada)
         if ($detail->discount_applied && $detail->discount_id) {
             $disc = \App\Models\Discount::find($detail->discount_id);
             if ($disc && $disc->needed_poin) {
@@ -170,16 +161,16 @@ public function bayar(Penjualan $penjualan, Request $request)
 
     // Simpan hasil perhitungan ke penjualan
     $penjualan->markup = $totalMarkup;
-    $penjualan->ppn    = $totalPPN;       // Simpan total PPN yang sudah dihitung
+    $penjualan->ppn    = $totalPPN;
     $penjualan->diskon = $totalDiscount;
 
     // Jika transaksi dilakukan oleh member
     if ($penjualan->member) {
         $member = $penjualan->member;
 
-        // Tambah poin: misalnya 1 poin per Rp1000 pembelian
+        // Tambah poin member
         $poinTambahan = floor($total_harga / 1000);
-        $member->poin         += $poinTambahan;
+        $member->poin += $poinTambahan;
         $member->total_belanja += $total_harga;
 
         // Update tipe member jika memenuhi syarat
@@ -203,6 +194,16 @@ public function bayar(Penjualan $penjualan, Request $request)
     // Simpan perubahan pada penjualan
     $penjualan->save();
 
+    // Log transaksi pembayaran
+    $logMessage = "Pembayaran untuk penjualan {$penjualan->kode_penjualan} berhasil. Total Harga: " .
+                  "Rp" . number_format($total_harga, 0, ',', '.') . ", " .
+                  "Bayar: Rp" . number_format($bayar, 0, ',', '.') . ", " .
+                  "Kembalian: Rp" . number_format($kembalian, 0, ',', '.') . ". " .
+                  "Diskon: Rp" . number_format($totalDiscount, 0, ',', '.') . ", " .
+                  "PPN: Rp" . number_format($totalPPN, 0, ',', '.') . ", " .
+                  "Markup: Rp" . number_format($totalMarkup, 0, ',', '.') . ".";
+    $this->logAction(Auth::id(), 'bayar', 'Penjualan', $logMessage, $penjualan->id, null, $penjualan->toArray());
+
     return back()->with([
         'msg'       => 'Pembayaran Berhasil',
         'status'    => true,
@@ -210,6 +211,23 @@ public function bayar(Penjualan $penjualan, Request $request)
         'kembalian' => $kembalian,
     ]);
 }
+
+private function logAction($userId, $action, $model, $msg, $recordId = null, $oldData = null, $newData = null)
+{
+    \App\Models\Logs::create([
+        'user_id' => $userId,
+        'action' => $action,
+        'table_name' => $model,
+        'record_id' => $recordId,
+        'old_data' => $oldData ? json_encode($oldData) : null,
+        'new_data' => $newData ? json_encode($newData) : null,
+        'msg' => $msg,
+        'ip_address' => request()->ip(),
+        'user_agent' => request()->header('User-Agent'),
+        'created_at' => now(),
+    ]);
+}
+
 
 
 
