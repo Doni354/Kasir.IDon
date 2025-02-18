@@ -18,21 +18,6 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DiscountController;
 use App\Http\Controllers\MemberController;
 
-Route::get('/check-username', function (Request $request) {
-    $exists = User::where('name', $request->name)->exists();
-    return response()->json(['exists' => $exists]);
-});
-
-Route::get('/check-email', function (Request $request) {
-    $exists = User::where('email', $request->email)->exists();
-    return response()->json(['exists' => $exists]);
-});
-
-Route::get('/check-category', function (Request $request) {
-    $exists = Category::where('name', $request->name)->exists();
-    return response()->json(['exists' => $exists]);
-});
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -62,41 +47,32 @@ Route::middleware(['guest'])->group(function(){
 Route::middleware(['auth'])->group(function(){
     Route::get('/logout', [SesiController::class, 'logout']);
     Route::get('/home', [HomeCOntroller::class, 'index']);
-
     Route::get('/produk', [ProdukController::class, 'index']);
     Route::get('/discount', [DiscountController::class, 'index']);
     Route::get('/cetak-nota-penjualan/{kode_penjualan}', [PenjualanController::class, 'cetakNota'])->name('cetak.nota');
+    Route::get('/products/search', [ProdukController::class, 'search'])->name('products.search');
+    Route::get('/products/by-category', [ProdukController::class, 'getProductsByCategory'])->name('products.byCategory');
+    Route::get('/products/by-categoryDiscount', [DiscountController::class, 'getProductsByCategory'])->name('products.byCategoryDiscount');
+    Route::get('/check-username', function (Request $request) {
+        $exists = User::where('name', $request->name)->exists();
+        return response()->json(['exists' => $exists]);
+    });
+    Route::get('/check-email', function (Request $request) {
+        $exists = User::where('email', $request->email)->exists();
+        return response()->json(['exists' => $exists]);
+    });
+    Route::get('/check-category', function (Request $request) {
+        $exists = Category::where('name', $request->name)->exists();
+        return response()->json(['exists' => $exists]);
+    });
+    Route::get('/categories/search', [CategoryController::class, 'search'])->name('categories.search');
 
 });
 
 Route::middleware(['auth', 'onlyAdmin'])->group(function () {
-    Route::get('/discount-edit={id}', [DiscountController::class, 'edit'])->name('discount.edit');
-    Route::put('/discount/{id}', [DiscountController::class, 'update'])->name('discount.update');
-    Route::delete('/discount/{discount}', [DiscountController::class, 'destroy'])->name('discount.destroy');
-
-
-    Route::get('/discount-tambah', [DiscountController::class, 'create'])->name('discount.create');
-    Route::post('/discount/store', [DiscountController::class, 'store'])->name('discount.store');
-    Route::get('/produk-tambah', [ProdukController::class, 'create'])->name('produk.create');
-    Route::post('/produk/store', [ProdukController::class, 'store'])->name('produk.store');
-    Route::get('/edit-produk={id}', [ProdukController::class, 'edit'])->name('produk.edit');
-    Route::post('/update-produk/{id}', [ProdukController::class, 'update'])->name('produk.update');
-    Route::delete('/hapus-produk={id}', [ProdukController::class, 'destroy'])->name('produk.destroy');
-    Route::get('/stok', [StokController::class, 'index']);
-
-    Route::get('/laporan/export', [LaporanController::class, 'export'])->name('laporan.export');
-    Route::get('/stok-tambah', [StokController::class, 'create'])->name('stok.create');
-    Route::post('/stok-tambah', [StokController::class, 'store'])->name('stok.store');
-    Route::get('/stok-edit={id}', [StokController::class, 'edit'])->name('stok.edit');
-    Route::put('/stok-update/{id}', [StokController::class, 'update'])->name('stok.update');
-    Route::delete('/stok-delete/{id}', [StokController::class, 'destroy'])->name('stok.destroy');
 
 });
-Route::get('/categories/search', [CategoryController::class, 'search'])->name('categories.search');
-Route::get('/products/search', [ProdukController::class, 'search'])->name('products.search');
 
-Route::get('/products/by-category', [ProdukController::class, 'getProductsByCategory'])->name('products.byCategory');
-Route::get('/products/by-categoryDiscount', [DiscountController::class, 'getProductsByCategory'])->name('products.byCategoryDiscount');
 
 Route::middleware(['auth', 'onlyAdmin'])->group(function(){
     Route::get('/logs', [LogController::class, 'index'])->name('logs.index');
@@ -118,14 +94,47 @@ Route::middleware(['auth', 'onlyAdmin'])->group(function(){
     Route::get('/edit-category={category:id}', [CategoryController::class, 'edit']);
     Route::put('/edit-category/{category:id}', [CategoryController::class, 'update']);
     Route::get('/hapus-category/{category:id}', [CategoryController::class, 'delete']);
+    Route::get('/discount-edit={id}', [DiscountController::class, 'edit'])->name('discount.edit');
+    Route::put('/discount/{id}', [DiscountController::class, 'update'])->name('discount.update');
+    Route::delete('/discount/{discount}', [DiscountController::class, 'destroy'])->name('discount.destroy');
+
+    Route::get('/discount-tambah', [DiscountController::class, 'create'])->name('discount.create');
+    Route::post('/discount/store', [DiscountController::class, 'store'])->name('discount.store');
+    Route::get('/produk-tambah', [ProdukController::class, 'create'])->name('produk.create');
+    Route::post('/produk/store', [ProdukController::class, 'store'])->name('produk.store');
+    Route::get('/edit-produk={id}', [ProdukController::class, 'edit'])->name('produk.edit');
+    Route::post('/update-produk/{id}', [ProdukController::class, 'update'])->name('produk.update');
+    Route::delete('/hapus-produk={id}', [ProdukController::class, 'destroy'])->name('produk.destroy');
+    Route::get('/stok', [StokController::class, 'index']);
+
+    Route::get('/laporan/export', [LaporanController::class, 'export'])->name('laporan.export');
+    Route::get('/stok-tambah', [StokController::class, 'create'])->name('stok.create');
+    Route::post('/stok-tambah', [StokController::class, 'store'])->name('stok.store');
+    Route::get('/stok-edit={id}', [StokController::class, 'edit'])->name('stok.edit');
+    Route::put('/stok-update/{id}', [StokController::class, 'update'])->name('stok.update');
+    Route::delete('/stok-delete/{id}', [StokController::class, 'destroy'])->name('stok.destroy');
 
 });
 
 Route::middleware(['auth', 'onlyPetugas'])->group(function(){
-    Route::post('/tambah-produk', [ProdukController::class, 'insert']);
-    Route::get('/edit-produk={produk:id}', [ProdukController::class, 'edit']);
-    Route::put('/edit-produk/{produk:id}', [ProdukController::class, 'update']);
-    Route::get('/hapus-produk/{produk:id}', [ProdukController::class, 'delete']);
+    Route::get('/category', [CategoryController::class, 'index']);
+    Route::get('/tambah-category', [CategoryController::class, 'tambah']);
+    Route::post('/tambah-category', [CategoryController::class, 'insert']);
+    Route::get('/edit-category={category:id}', [CategoryController::class, 'edit']);
+    Route::put('/edit-category/{category:id}', [CategoryController::class, 'update']);
+    Route::get('/hapus-category/{category:id}', [CategoryController::class, 'delete']);
+
+    Route::get('/produk-tambah', [ProdukController::class, 'create'])->name('produk.create');
+    Route::post('/produk/store', [ProdukController::class, 'store'])->name('produk.store');
+    Route::get('/edit-produk={id}', [ProdukController::class, 'edit'])->name('produk.edit');
+    Route::post('/update-produk/{id}', [ProdukController::class, 'update'])->name('produk.update');
+    Route::delete('/hapus-produk={id}', [ProdukController::class, 'destroy'])->name('produk.destroy');
+    Route::get('/stok', [StokController::class, 'index']);
+    Route::get('/stok-tambah', [StokController::class, 'create'])->name('stok.create');
+    Route::post('/stok-tambah', [StokController::class, 'store'])->name('stok.store');
+    Route::get('/stok-edit={id}', [StokController::class, 'edit'])->name('stok.edit');
+    Route::put('/stok-update/{id}', [StokController::class, 'update'])->name('stok.update');
+    Route::delete('/stok-delete/{id}', [StokController::class, 'destroy'])->name('stok.destroy');
 });
 
 Route::middleware(['auth', 'onlyKasir'])->group(function(){
