@@ -19,8 +19,8 @@ class DiscountController extends Controller
 
     public function create()
     {
-        $products = Produk::all();
-        $categories = Category::all();
+        $products = Produk::where('status', 1)->get();
+        $categories = Category::where('status', 1)->get();
         return view('discount.create', compact('products', 'categories'));
     }
 
@@ -29,7 +29,7 @@ class DiscountController extends Controller
         $categoryId = $request->category_id;
         $today = date('Y-m-d');
 
-        $products = Produk::where('category_id', $categoryId)
+        $products = Produk::where('status', 1)->where('category_id', $categoryId)
             ->whereNotIn('id', function($query) use ($today) {
                 $query->select('product_id')
                       ->from('discount')
@@ -73,8 +73,8 @@ class DiscountController extends Controller
     public function edit($id)
     {
         $discount = Discount::findOrFail($id);
-        $categories = Category::all();
-        $products = Produk::all();
+        $categories = Category::where('status', 1)->get();
+        $products = Produk::where('status', 1)->get();
         return view('discount.edit', compact('discount', 'categories', 'products'));
     }
 

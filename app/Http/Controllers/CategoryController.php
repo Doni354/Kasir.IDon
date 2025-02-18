@@ -19,7 +19,7 @@ class CategoryController extends Controller
     public function search(Request $request)
     {
         $search = $request->input('q');
-        $categories = Category::where('name', 'LIKE', "%{$search}%")->get(['id', 'name']);
+        $categories = Category::where('status', 1)->where('name', 'LIKE', "%{$search}%")->get(['id', 'name']);
         return response()->json($categories);
     }
 

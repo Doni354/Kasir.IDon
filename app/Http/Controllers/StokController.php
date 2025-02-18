@@ -22,7 +22,7 @@ class StokController extends Controller
 
     public function create()
     {
-        $products = Produk::all();
+        $products = Produk::where('status', 1)->get();
         return view('stok.create', compact('products'));
     }
 
