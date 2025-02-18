@@ -12,6 +12,9 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
+        <link rel="icon" href="/img/Login.jpg" type="image/x-icon">
+
+
     <title>KASIR.IDon - @yield('title')</title>
     <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -54,7 +57,7 @@
         <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
             <!-- Sidebar - Brand -->
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/">
                 <div class="sidebar-brand-icon ">
                     <i class="fas fa-cash-register"></i>
                 </div>
@@ -84,7 +87,7 @@
                     <i class="fas fa-box"></i>
                     <span>Product</span></a>
             </li>
-            
+
             <li class="nav-item">
                 <a class="nav-link" href="/discount">
                     <i class="fas fa-tags"></i>
