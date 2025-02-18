@@ -22,7 +22,7 @@
         @if(session('msg'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 {{ session('msg') }}
-               
+
             </div>
         @endif
 
@@ -91,11 +91,7 @@
                                 <a href="/proses-penjualan={{ $item->kode_penjualan }}" class="btn btn-info btn-sm me-1">
                                     <i class="fa fa-eye"></i> Detail
                                 </a>
-                                <a onclick="return confirm('Apakah anda yakin ingin menghapus penjualan ini?')"
-                                   href="/hapus-penjualan/{{ $item->kode_penjualan }}"
-                                   class="btn btn-danger btn-sm">
-                                    <i class="fa fa-trash"></i> Hapus
-                                </a>
+                                
                             </td>
                         </tr>
                     @endforeach
