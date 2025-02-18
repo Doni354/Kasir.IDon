@@ -13,31 +13,32 @@
                                 <li>{{ $error }}</li>
                             @endforeach
                         </ul>
-                        
+
                     </div>
                 @endif
 
                 <h6 class="mb-4">Pilih Produk</h6>
-                <form action="/pilih-produk" method="POST" @if($penjualan->status == 'paid') style="pointer-events: none; opacity: 0.6;" @endif>
-                    @csrf
-                    <input type="hidden" name="kode_penjualan" value="{{ $penjualan->kode_penjualan }}">
-                    <div class="mb-3">
-                        <label for="produk_id" class="form-label">Produk</label>
-                        <select name="produk_id" id="produk-select" class="form-select">
-                            <option value="">-- Pilih Produk --</option>
-                            @foreach ($produk as $item)
-                                <option value="{{ $item->id }}">
-                                    {{ $item->name }} | Stok: {{ $item->totalStok() }} | Rp {{ number_format($item->price, 0, ',', '.') }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="qty" class="form-label">Jumlah</label>
-                        <input type="number" name="qty" class="form-control" id="qty" min="1" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">Tambah ke Keranjang</button>
-                </form>
+                    <form action="/pilih-produk" method="POST" @if($penjualan->status == 'paid') style="pointer-events: none; opacity: 0.6;" @endif>
+                        @csrf
+                        <input type="hidden" name="kode_penjualan" value="{{ $penjualan->kode_penjualan }}">
+                        <div class="mb-3">
+                            <label for="produk_id" class="form-label">Produk</label>
+                            <select name="produk_id" id="produk-select" class="form-select">
+                                <option value="">-- Pilih Produk --</option>
+                                @foreach ($produk as $item)
+                                    <option value="{{ $item->id }}" data-stok="{{ $item->totalStok() }}" data-price="{{ number_format($item->price, 0, ',', '.') }}">
+                                        {{ $item->name }} | Stok: {{ $item->totalStok() }} | Rp {{ number_format($item->price, 0, ',', '.') }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="qty" class="form-label">Jumlah</label>
+                            <input type="number" name="qty" class="form-control" id="qty" min="1" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Tambah ke Keranjang</button>
+                    </form>
+
             </div>
         </div>
 
@@ -251,4 +252,24 @@
 
 
 </div>
+@endsection
+
+@section('scripts')
+<!-- Di dalam tag <head> -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
+
+    <!-- Sebelum penutupan </body> -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Inisialisasi Select2 untuk #produk-select
+            $('#produk-select').select2({
+                placeholder: "Pilih Produk", // Placeholder default
+                allowClear: true, // Izinkan untuk menghapus pilihan
+                width: '100%' // Sesuaikan dengan lebar form
+            });
+        });
+    </script>
+
 @endsection
