@@ -49,7 +49,7 @@ class ProdukController extends Controller
     public function edit($id)
     {
         $produk = Produk::findOrFail($id);
-        $categories = Category::with('kategori')->where('status', 1)->where('status', 1)->get();
+        $categories = Category::where('status', 1)->where('status', 1)->get();
         return view('produk.edit', compact('produk', 'categories'));
     }
 
